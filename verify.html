@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waevo Dashboard — Verificación</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root { --accent:#00e5ff; --secondary:#bd00ff; --danger:#ff0055; --success:#00ff88; --muted:#94a3b8; --border:rgba(255,255,255,0.08); --card:rgba(15,15,22,0.95); }
+    * { box-sizing:border-box; margin:0; padding:0; outline:none; }
+    body { background:linear-gradient(-45deg,#050505,#0a0a14,#0d0520,#050a14); background-size:400% 400%; animation:gradBG 12s ease infinite; color:#f8fafc; font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+    @keyframes gradBG { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+    .bg-grid { position:fixed; inset:0; z-index:0; background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px); background-size:50px 50px; pointer-events:none; }
+    .wrap { position:relative; z-index:1; width:420px; max-width:94vw; animation:slideUp 0.5s cubic-bezier(0.2,0.8,0.2,1); }
+    @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+    .logo { text-align:center; margin-bottom:10px; font-size:3.2rem; font-weight:900; letter-spacing:-2px; background:linear-gradient(135deg,#00e5ff,#bd00ff,#ff0055); -webkit-background-clip:text; color:transparent; filter:drop-shadow(0 0 20px rgba(189,0,255,0.5)); }
+    .subtitle { text-align:center; font-size:12px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; margin-bottom:36px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:36px; box-shadow:0 30px 80px rgba(0,0,0,0.8); backdrop-filter:blur(20px); }
+    .card-title { font-size:18px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:10px; }
+    .card-desc { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.5; }
+    .countdown { text-align:center; margin-bottom:24px; }
+    .countdown-num { font-size:2.5rem; font-weight:900; color:var(--accent); font-family:monospace; text-shadow:0 0 20px rgba(0,229,255,0.4); }
+    .countdown-label { font-size:11px; color:var(--muted); margin-top:4px; }
+    .code-inputs { display:flex; gap:10px; justify-content:center; margin-bottom:8px; }
+    .digit { width:52px; height:60px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); color:white; font-size:24px; font-weight:900; text-align:center; transition:0.2s; font-family:monospace; user-select:text; -webkit-user-select:text; }
+    .digit:focus { border-color:var(--accent); background:rgba(0,229,255,0.06); box-shadow:0 0 0 3px rgba(0,229,255,0.15); }
+    .error { font-size:12px; color:var(--danger); min-height:18px; text-align:center; margin-bottom:12px; }
+    .btn { width:100%; height:52px; border-radius:14px; background:linear-gradient(135deg,var(--secondary),var(--accent)); border:none; color:white; font-weight:700; font-size:15px; cursor:pointer; transition:0.3s; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .btn:hover { opacity:0.88; transform:translateY(-2px); }
+    .btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+    .btn-back { width:100%; height:44px; border-radius:12px; background:transparent; border:1px solid rgba(255,255,255,0.1); color:var(--muted); font-size:13px; cursor:pointer; transition:0.2s; margin-top:10px; }
+    .btn-back:hover { border-color:var(--danger); color:var(--danger); }
+    .resend { text-align:center; font-size:12px; color:var(--muted); margin-top:16px; }
+    .resend span { color:var(--accent); cursor:pointer; text-decoration:underline; }
+    .success { text-align:center; display:none; }
+    .success-icon { font-size:60px; margin-bottom:16px; animation:popIn 0.5s cubic-bezier(0.2,0.8,0.2,1); }
+    @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+    .dots { display:flex; justify-content:center; gap:8px; margin-top:28px; }
+    .dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.15); }
+    .dot.done { background:#00ff88; }
+    .dot.active { background:var(--accent); box-shadow:0 0 8px rgba(0,229,255,0.4); }
+    .spinner { animation:spin 1s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="wrap">
+    <div class="logo">Waevo</div>
+    <div class="subtitle">Verificación</div>
+    <div class="card">
+      <div id="form">
+        <div class="card-title"><i class="fas fa-mobile-screen" style="color:var(--accent)"></i> Código de verificación</div>
+        <div class="card-desc">Abre tu navegador Waevo. Aparecerá una ventana con el código de 6 dígitos.</div>
+        <div class="countdown">
+          <div class="countdown-num" id="timer">5:00</div>
+          <div class="countdown-label">tiempo restante</div>
+        </div>
+        <div class="code-inputs">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric">
+        </div>
+        <div class="error" id="err"></div>
+        <button class="btn" id="btn" onclick="verify()"><i class="fas fa-check"></i> Verificar</button>
+        <button class="btn-back" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Volver</button>
+        <div class="resend">¿No ves el código? <span onclick="resend()">Reenviar</span></div>
+      </div>
+      <div class="success" id="success">
+        <div class="success-icon">✅</div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:8px">¡Verificado!</div>
+        <div style="font-size:13px;color:var(--muted)">Entrando al Dashboard...</div>
+      </div>
+    </div>
+    <div class="dots">
+      <div class="dot done"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    const db = getDatabase(initializeApp({
+      apiKey: "AIzaSyD13N4-9MjTrmlPwGP7mves0Exje4v2ACw",
+      authDomain: "kahoot-8529e.firebaseapp.com",
+      databaseURL: "https://kahoot-8529e-default-rtdb.firebaseio.com",
+      projectId: "kahoot-8529e"
+    }));
+    const userId = sessionStorage.getItem('waevo_login_id');
+    if (!userId) window.location.href = 'index.html';
+
+    // Countdown
+    let s = 300;
+    const timerEl = document.getElementById('timer');
+    const t = setInterval(() => {
+      s--;
+      timerEl.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+      if (s <= 0) { clearInterval(t); timerEl.style.color='var(--danger)'; document.getElementById('btn').disabled=true; document.getElementById('err').textContent='❌ Código expirado.'; }
+    }, 1000);
+
+    // Cajas del código
+    const digits = document.querySelectorAll('.digit');
+    digits.forEach((inp, i) => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/\D/g,'');
+        if (inp.value && i < 5) digits[i+1].focus();
+        if (Array.from(digits).every(d => d.value)) window.verify();
+      });
+      inp.addEventListener('keydown', e => { if (e.key==='Backspace' && !inp.value && i>0) digits[i-1].focus(); });
+      inp.addEventListener('paste', e => {
+        const p = (e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');
+        if (p.length >= 6) { digits.forEach((d,idx) => d.value=p[idx]||''); digits[5].focus(); e.preventDefault(); window.verify(); }
+      });
+    });
+
+    window.verify = async function() {
+      const code = Array.from(digits).map(d=>d.value).join('');
+      const err = document.getElementById('err');
+      const btn = document.getElementById('btn');
+      err.textContent = '';
+      if (code.length < 6) { err.textContent='❌ Introduce los 6 dígitos.'; return; }
+      btn.disabled=true; btn.innerHTML='<i class="fas fa-circle-notch spinner"></i> Verificando...';
+      try {
+        const snap = await get(ref(db, `waevo_verif/${userId}`));
+        if (!snap.exists()) { err.textContent='❌ Código no encontrado.'; btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Verificar'; return; }
+        const data = snap.val();
+        if (Date.now() > data.expires) { err.textContent='❌ Código expirado.'; btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Verificar'; return; }
+        if (data.code !== code) {
+          err.textContent='❌ Código incorrecto.';
+          digits.forEach(d => d.style.borderColor='var(--danger)');
+          setTimeout(() => digits.forEach(d => d.style.borderColor=''), 1500);
+          btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Verificar'; return;
+        }
+        const token = 'sess_' + Math.random().toString(36).slice(2).toUpperCase();
+        sessionStorage.setItem('waevo_session', token);
+        sessionStorage.setItem('waevo_user_id', userId);
+        await set(ref(db, `waevo_sessions/${userId}`), { token, createdAt: Date.now(), expires: Date.now()+604800000 });
+        await remove(ref(db, `waevo_verif/${userId}`));
+        clearInterval(t);
+        document.getElementById('form').style.display='none';
+        document.getElementById('success').style.display='block';
+        setTimeout(() => window.location.href='dashboard.html', 1500);
+      } catch(e) { err.textContent='❌ Error de conexión.'; btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Verificar'; }
+    };
+
+    window.resend = async function() {
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      await set(ref(db, `waevo_verif/${userId}`), { code, expires: Date.now()+300000 });
+      s=300; document.getElementById('err').textContent=''; document.getElementById('btn').disabled=false; document.getElementById('btn').innerHTML='<i class="fas fa-check"></i> Verificar';
+      alert('✅ Nuevo código enviado a tu navegador Waevo.');
+    };
+  </script>
+</body>
+</html>
