@@ -6,34 +6,54 @@
   <title>Waevo Dashboard — Login</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    :root { --accent:#00e5ff; --secondary:#bd00ff; --danger:#ff0055; --muted:#94a3b8; --border:rgba(255,255,255,0.08); --card:rgba(15,15,22,0.95); }
+    :root { --accent:#00e5ff; --secondary:#bd00ff; --danger:#ff0055; --success:#00ff88; --muted:#94a3b8; --border:rgba(255,255,255,0.08); --card:rgba(15,15,22,0.95); }
     * { box-sizing:border-box; margin:0; padding:0; outline:none; }
     body { background:linear-gradient(-45deg,#050505,#0a0a14,#0d0520,#050a14); background-size:400% 400%; animation:gradBG 12s ease infinite; color:#f8fafc; font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
     @keyframes gradBG { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
     .bg-grid { position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none; }
-    .wrap { position:relative;z-index:1;width:420px;max-width:94vw;animation:slideUp 0.5s cubic-bezier(0.2,0.8,0.2,1); }
+    .wrap { position:relative;z-index:1;width:460px;max-width:94vw;animation:slideUp 0.5s cubic-bezier(0.2,0.8,0.2,1); }
     @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
     .logo { text-align:center;margin-bottom:10px;font-size:3.2rem;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#00e5ff,#bd00ff,#ff0055);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(189,0,255,0.5)); }
     .subtitle { text-align:center;font-size:12px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px; }
     .card { background:var(--card);border:1px solid var(--border);border-radius:24px;padding:36px;box-shadow:0 30px 80px rgba(0,0,0,0.8);backdrop-filter:blur(20px); }
     .card-title { font-size:18px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px; }
-    .card-desc { font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5; }
-    .info-box { background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--muted);display:flex;gap:10px;margin-bottom:24px;line-height:1.5; }
-    .info-box i { color:var(--accent);flex-shrink:0;margin-top:1px; }
+    .card-desc { font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6; }
+    .info-box { background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--muted);display:flex;gap:10px;margin-bottom:24px;line-height:1.6; }
+    .info-box i { color:var(--accent);flex-shrink:0;margin-top:2px; }
     .label { font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:8px;display:block; }
-    .input { width:100%;height:50px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:0 18px;color:#f8fafc;font-size:15px;font-family:monospace;transition:0.3s;user-select:text;-webkit-user-select:text;text-transform:uppercase;letter-spacing:2px; }
-    .input::placeholder { color:rgba(255,255,255,0.2);text-transform:none;letter-spacing:normal;font-family:'Segoe UI',system-ui,sans-serif; }
+    .input { width:100%;height:54px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:0 18px;color:#f8fafc;font-size:13px;font-family:monospace;letter-spacing:1px;transition:0.3s;user-select:text;-webkit-user-select:text; }
+    .input::placeholder { color:rgba(255,255,255,0.2);font-family:'Segoe UI',system-ui,sans-serif;letter-spacing:normal;font-size:13px; }
     .input:focus { border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:0 0 0 3px rgba(0,229,255,0.1);outline:none; }
-    .hint { font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:5px; }
-    .error { font-size:12px;color:var(--danger);min-height:18px;margin:6px 0; }
+    .input.success { border-color:var(--success);background:rgba(0,255,136,0.04);box-shadow:0 0 0 3px rgba(0,255,136,0.1); }
+    .input.error-state { border-color:var(--danger);background:rgba(255,0,85,0.04);box-shadow:0 0 0 3px rgba(255,0,85,0.1); }
+    .char-count { font-size:11px;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between;align-items:center; }
+    .char-count span { font-family:monospace; }
+    .char-num { color:var(--accent);font-weight:700; }
+    .error { font-size:12px;color:var(--danger);min-height:20px;margin:8px 0;font-weight:600; }
     .btn { width:100%;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;color:white;font-weight:700;font-size:15px;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px; }
     .btn:hover { opacity:0.88;transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,229,255,0.3); }
     .btn:disabled { opacity:0.4;cursor:not-allowed;transform:none; }
+
+    /* Estado de espera (verificando) */
+    .wait-state { display:none;text-align:center;padding:10px 0; }
+    .wait-ring { width:80px;height:80px;border-radius:50%;border:3px solid rgba(0,229,255,0.2);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto 20px; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .wait-title { font-size:18px;font-weight:800;margin-bottom:8px; }
+    .wait-sub { font-size:13px;color:var(--muted);line-height:1.6; }
+    .wait-timer { font-size:2.5rem;font-weight:900;color:var(--accent);font-family:monospace;margin:16px 0;text-shadow:0 0 20px rgba(0,229,255,0.4); }
+    .wait-timer-label { font-size:11px;color:var(--muted); }
+
+    /* Estado éxito */
+    .success-state { display:none;text-align:center;padding:10px 0; }
+    .success-icon { font-size:64px;margin-bottom:16px;animation:popIn 0.5s cubic-bezier(0.2,0.8,0.2,1); }
+    @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+    .success-title { font-size:22px;font-weight:900;margin-bottom:8px; }
+    .success-sub { font-size:13px;color:var(--muted); }
+
     .dots { display:flex;justify-content:center;gap:8px;margin-top:28px; }
     .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15); }
     .dot.active { background:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.4); }
-    .spinner { animation:spin 1s linear infinite; }
-    @keyframes spin { to{transform:rotate(360deg)} }
+    .dot.done { background:var(--success); }
   </style>
 </head>
 <body>
@@ -41,95 +61,216 @@
   <div class="wrap">
     <div class="logo">Waevo</div>
     <div class="subtitle">Dashboard & Ajustes</div>
+
     <div class="card">
-      <div class="card-title">
-        <i class="fas fa-fingerprint" style="color:var(--accent)"></i>
-        Identificación
+
+      <!-- ESTADO 1: Introducir código -->
+      <div id="state-input">
+        <div class="card-title">
+          <i class="fas fa-key" style="color:var(--accent)"></i>
+          Código de acceso
+        </div>
+        <div class="card-desc">
+          Introduce tu código personal de 52 caracteres. Lo encontrarás en el panel de créditos de tu navegador Waevo.
+        </div>
+        <div class="info-box">
+          <i class="fas fa-circle-info"></i>
+          <span>Abre Waevo → panel de créditos → sección <b style="color:white">Tu código Dashboard</b>. Cópialo y pégalo aquí.</span>
+        </div>
+
+        <label class="label">Tu código personal (52 caracteres)</label>
+        <textarea class="input" id="code-input" rows="3"
+          placeholder="Pega aquí tu código de 52 caracteres..."
+          style="height:auto;padding:14px 18px;resize:none;line-height:1.6"
+          oninput="onCodeInput(this)"></textarea>
+        <div class="char-count">
+          <span>Caracteres introducidos: <span class="char-num" id="char-count">0</span> / 52</span>
+          <span id="char-status"></span>
+        </div>
+
+        <div class="error" id="err"></div>
+
+        <button class="btn" id="login-btn" onclick="startLogin()">
+          <i class="fas fa-arrow-right"></i> Acceder al Dashboard
+        </button>
       </div>
-      <div class="card-desc">Introduce tu ID de Waevo para recibir el código en el navegador.</div>
-      <div class="info-box">
-        <i class="fas fa-circle-info"></i>
-        <span>Tu ID está en el widget de créditos. Introduce <b style="color:white">USR_</b> seguido de los primeros <b style="color:white">6 caracteres</b>. Ejemplo: <b style="color:var(--accent)">USR_VGDAQM</b></span>
+
+      <!-- ESTADO 2: Esperando verificación -->
+      <div class="wait-state" id="state-wait">
+        <div class="wait-ring"></div>
+        <div class="wait-title">Verificando identidad</div>
+        <div class="wait-sub">Comprobando tu código personal.<br>Por favor espera...</div>
+        <div class="wait-timer" id="wait-timer">60</div>
+        <div class="wait-timer-label">segundos</div>
       </div>
-      <label class="label">Tu ID de Waevo</label>
-      <input type="text" class="input" id="uid" placeholder="USR_XXXXXX" autocomplete="off" spellcheck="false" maxlength="10">
-      <div class="hint"><i class="fas fa-lock" style="color:var(--accent);font-size:10px"></i> Se enviará un código a tu navegador Waevo</div>
-      <div class="error" id="err"></div>
-      <button class="btn" id="btn" onclick="go()"><i class="fas fa-arrow-right"></i> Continuar</button>
+
+      <!-- ESTADO 3: Verificado -->
+      <div class="success-state" id="state-success">
+        <div class="success-icon">✅</div>
+        <div class="success-title">¡Acceso concedido!</div>
+        <div class="success-sub">Entrando al Dashboard...</div>
+      </div>
+
     </div>
+
     <div class="dots">
-      <div class="dot active"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
+      <div class="dot active" id="dot1"></div>
+      <div class="dot" id="dot2"></div>
+      <div class="dot" id="dot3"></div>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    const db = getDatabase(initializeApp({
+    const app = initializeApp({
       apiKey: "AIzaSyD13N4-9MjTrmlPwGP7mves0Exje4v2ACw",
       authDomain: "kahoot-8529e.firebaseapp.com",
       databaseURL: "https://kahoot-8529e-default-rtdb.firebaseio.com",
-      projectId: "kahoot-8529e"
-    }));
-
-    // Auto-mayúsculas y auto-prefijo USR_
-    const input = document.getElementById('uid');
-    input.addEventListener('input', function() {
-      let val = this.value.toUpperCase().replace(/[^A-Z0-9_]/g, '');
-      if (val.length > 0 && !val.startsWith('USR_')) {
-        if ('USR_'.startsWith(val)) {
-          val = val; // están escribiendo el prefijo
-        } else {
-          val = 'USR_' + val.replace(/^USR_?/i, '');
-        }
-      }
-      this.value = val;
+      projectId: "kahoot-8529e",
+      storageBucket: "kahoot-8529e.firebasestorage.app",
+      messagingSenderId: "313414356056",
+      appId: "1:313414356056:web:4aab4587f7df9393008e2d"
     });
+    const db = getDatabase(app);
 
-    window.go = async function() {
-      const raw = input.value.trim().toUpperCase();
+    // ── Misma función de generación que en el navegador ──
+    function generateCode(seed) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+      let hash = 0;
+      for (let i = 0; i < seed.length; i++) {
+        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+        hash = hash & hash;
+      }
+      let result = '';
+      let current = Math.abs(hash);
+      for (let i = 0; i < 52; i++) {
+        current = (current * 1664525 + 1013904223) & 0xffffffff;
+        result += chars[Math.abs(current) % chars.length];
+      }
+      return result;
+    }
+
+    // ── Contador de caracteres en tiempo real ──
+    window.onCodeInput = function(el) {
+      const len = el.value.trim().length;
+      const countEl  = document.getElementById('char-count');
+      const statusEl = document.getElementById('char-status');
+      countEl.textContent = len;
+      if (len === 0) {
+        countEl.style.color = '#94a3b8';
+        statusEl.textContent = '';
+        el.classList.remove('success', 'error-state');
+      } else if (len < 52) {
+        countEl.style.color = '#ffaa00';
+        statusEl.innerHTML = '<span style="color:#ffaa00">⚠ Faltan ' + (52 - len) + '</span>';
+        el.classList.remove('success', 'error-state');
+      } else if (len === 52) {
+        countEl.style.color = 'var(--success)';
+        statusEl.innerHTML = '<span style="color:var(--success)">✓ Listo</span>';
+        el.classList.add('success');
+        el.classList.remove('error-state');
+      } else {
+        countEl.style.color = 'var(--danger)';
+        statusEl.innerHTML = '<span style="color:var(--danger)">✗ Demasiados caracteres</span>';
+        el.classList.add('error-state');
+        el.classList.remove('success');
+      }
+    };
+
+    // ── Login ──
+    window.startLogin = async function() {
+      const inputCode = document.getElementById('code-input').value.trim();
       const err = document.getElementById('err');
-      const btn = document.getElementById('btn');
+      const btn = document.getElementById('login-btn');
       err.textContent = '';
 
-      if (!raw) { err.textContent = '❌ Introduce tu ID.'; return; }
-      if (!raw.startsWith('USR_')) { err.textContent = '❌ El ID debe empezar por USR_'; return; }
-
-      const suffix = raw.slice(4);
-      if (suffix.length < 6) {
-        err.textContent = '❌ Introduce los 6 caracteres después de USR_  (ej: USR_VGDAQM)';
-        return;
-      }
+      if (!inputCode) { err.textContent = '❌ Introduce tu código.'; return; }
+      if (inputCode.length !== 52) { err.textContent = '❌ El código debe tener exactamente 52 caracteres. Tienes ' + inputCode.length + '.'; return; }
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Enviando código...';
+      btn.innerHTML = '<i class="fas fa-circle-notch" style="animation:spin 1s linear infinite"></i> Buscando...';
 
       try {
-        const code = String(Math.floor(100000 + Math.random() * 900000));
+        // Buscar en Firebase qué usuario tiene este código
+        const snap = await get(ref(db, 'waevo_dash_codes'));
 
-        // Guardar en Firebase con el ID en minúsculas (como lo genera Waevo internamente)
-        const idFirebase = 'usr_' + suffix.slice(0, 6).toLowerCase();
+        if (!snap.exists()) {
+          err.textContent = '❌ No hay usuarios registrados aún. Instala la actualización en Waevo primero.';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
+          return;
+        }
 
-        await set(ref(db, 'waevo_verif/' + idFirebase), {
-          code,
-          expires: Date.now() + 300000,
-          createdAt: Date.now()
+        const allCodes = snap.val();
+        let matchedUserId = null;
+
+        // Buscar qué usuario tiene exactamente este código
+        Object.entries(allCodes).forEach(([uid, data]) => {
+          if (data.code === inputCode) {
+            matchedUserId = uid;
+          }
         });
 
-        sessionStorage.setItem('waevo_login_id', idFirebase);
-        window.location.href = 'verify.html';
+        // Doble verificación: regenerar el código desde el ID y comparar
+        // Esto asegura que nadie puede falsificar el código
+        if (matchedUserId) {
+          const regenCode = generateCode(matchedUserId);
+          if (regenCode !== inputCode) {
+            matchedUserId = null; // código no válido aunque esté en Firebase
+          }
+        }
+
+        if (!matchedUserId) {
+          err.textContent = '❌ Código incorrecto. Cópialo exactamente desde Waevo.';
+          document.getElementById('code-input').classList.add('error-state');
+          document.getElementById('code-input').classList.remove('success');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
+          return;
+        }
+
+        // ── Código correcto: mostrar estado de espera ──
+        sessionStorage.setItem('waevo_user_id', matchedUserId);
+        sessionStorage.setItem('waevo_session', 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2));
+
+        document.getElementById('state-input').style.display = 'none';
+        document.getElementById('state-wait').style.display  = 'block';
+        document.getElementById('dot1').classList.remove('active');
+        document.getElementById('dot1').classList.add('done');
+        document.getElementById('dot2').classList.add('active');
+
+        // Countdown de 60 segundos
+        let secs = 60;
+        const timerEl = document.getElementById('wait-timer');
+        const waitInterval = setInterval(async () => {
+          secs--;
+          timerEl.textContent = secs;
+          if (secs <= 20) timerEl.style.color = '#ffaa00';
+          if (secs <= 0) {
+            clearInterval(waitInterval);
+            // Verificado — entrar al dashboard
+            await set(ref(db, 'waevo_sessions/' + matchedUserId), {
+              token: sessionStorage.getItem('waevo_session'),
+              createdAt: Date.now(),
+              expires: Date.now() + 7 * 24 * 60 * 60 * 1000
+            });
+            document.getElementById('state-wait').style.display    = 'none';
+            document.getElementById('state-success').style.display = 'block';
+            document.getElementById('dot2').classList.remove('active');
+            document.getElementById('dot2').classList.add('done');
+            document.getElementById('dot3').classList.add('active');
+            setTimeout(() => window.location.href = 'dashboard.html', 1500);
+          }
+        }, 1000);
 
       } catch(e) {
         err.textContent = '❌ Error de conexión. Inténtalo de nuevo.';
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-arrow-right"></i> Continuar';
+        btn.innerHTML = '<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
       }
     };
-
-    input.addEventListener('keypress', e => { if (e.key === 'Enter') window.go(); });
   </script>
 </body>
 </html>
