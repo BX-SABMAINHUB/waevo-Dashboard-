@@ -8,39 +8,48 @@
   <style>
     :root { --accent:#00e5ff; --secondary:#bd00ff; --danger:#ff0055; --success:#00ff88; --muted:#94a3b8; --border:rgba(255,255,255,0.08); --card:rgba(15,15,22,0.95); }
     * { box-sizing:border-box; margin:0; padding:0; outline:none; }
-    body { background:linear-gradient(-45deg,#050505,#0a0a14,#0d0520,#050a14); background-size:400% 400%; animation:gradBG 12s ease infinite; color:#f8fafc; font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+    body { background:linear-gradient(-45deg,#050505,#0a0a14,#0d0520,#050a14); background-size:400% 400%; animation:gradBG 12s ease infinite; color:#f8fafc; font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
     @keyframes gradBG { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-    .bg-grid { position:fixed; inset:0; z-index:0; background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px); background-size:50px 50px; pointer-events:none; }
-    .wrap { position:relative; z-index:1; width:420px; max-width:94vw; animation:slideUp 0.5s cubic-bezier(0.2,0.8,0.2,1); }
+    .bg-grid { position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none; }
+    .wrap { position:relative;z-index:1;width:440px;max-width:94vw;animation:slideUp 0.5s cubic-bezier(0.2,0.8,0.2,1); }
     @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-    .logo { text-align:center; margin-bottom:10px; font-size:3.2rem; font-weight:900; letter-spacing:-2px; background:linear-gradient(135deg,#00e5ff,#bd00ff,#ff0055); -webkit-background-clip:text; color:transparent; filter:drop-shadow(0 0 20px rgba(189,0,255,0.5)); }
-    .subtitle { text-align:center; font-size:12px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; margin-bottom:36px; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:36px; box-shadow:0 30px 80px rgba(0,0,0,0.8); backdrop-filter:blur(20px); }
-    .card-title { font-size:18px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:10px; }
-    .card-desc { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.5; }
-    .countdown { text-align:center; margin-bottom:24px; }
-    .countdown-num { font-size:2.5rem; font-weight:900; color:var(--accent); font-family:monospace; text-shadow:0 0 20px rgba(0,229,255,0.4); }
-    .countdown-label { font-size:11px; color:var(--muted); margin-top:4px; }
-    .code-inputs { display:flex; gap:10px; justify-content:center; margin-bottom:8px; }
-    .digit { width:52px; height:60px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); color:white; font-size:24px; font-weight:900; text-align:center; transition:0.2s; font-family:monospace; user-select:text; -webkit-user-select:text; }
-    .digit:focus { border-color:var(--accent); background:rgba(0,229,255,0.06); box-shadow:0 0 0 3px rgba(0,229,255,0.15); }
-    .error { font-size:12px; color:var(--danger); min-height:18px; text-align:center; margin-bottom:12px; }
-    .btn { width:100%; height:52px; border-radius:14px; background:linear-gradient(135deg,var(--secondary),var(--accent)); border:none; color:white; font-weight:700; font-size:15px; cursor:pointer; transition:0.3s; display:flex; align-items:center; justify-content:center; gap:8px; }
-    .btn:hover { opacity:0.88; transform:translateY(-2px); }
-    .btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
-    .btn-back { width:100%; height:44px; border-radius:12px; background:transparent; border:1px solid rgba(255,255,255,0.1); color:var(--muted); font-size:13px; cursor:pointer; transition:0.2s; margin-top:10px; }
-    .btn-back:hover { border-color:var(--danger); color:var(--danger); }
-    .resend { text-align:center; font-size:12px; color:var(--muted); margin-top:16px; }
-    .resend span { color:var(--accent); cursor:pointer; text-decoration:underline; }
-    .success { text-align:center; display:none; }
-    .success-icon { font-size:60px; margin-bottom:16px; animation:popIn 0.5s cubic-bezier(0.2,0.8,0.2,1); }
+    .logo { text-align:center;margin-bottom:10px;font-size:3.2rem;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#00e5ff,#bd00ff,#ff0055);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(189,0,255,0.5)); }
+    .subtitle { text-align:center;font-size:12px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-bottom:36px; }
+    .card { background:var(--card);border:1px solid var(--border);border-radius:24px;padding:36px;box-shadow:0 30px 80px rgba(0,0,0,0.8);backdrop-filter:blur(20px); }
+    .card-title { font-size:18px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px; }
+    .card-desc { font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6; }
+    .info-box { background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--muted);display:flex;gap:10px;margin-bottom:24px;line-height:1.6; }
+    .info-box i { color:var(--accent);flex-shrink:0;margin-top:2px; }
+    .countdown { text-align:center;margin-bottom:28px; }
+    .countdown-num { font-size:2.8rem;font-weight:900;color:var(--accent);font-family:monospace;text-shadow:0 0 20px rgba(0,229,255,0.4);transition:color 0.3s; }
+    .countdown-label { font-size:11px;color:var(--muted);margin-top:4px; }
+    .code-inputs { display:flex;gap:10px;justify-content:center;margin-bottom:10px; }
+    .digit { width:54px;height:62px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:white;font-size:26px;font-weight:900;text-align:center;transition:0.2s;font-family:monospace;user-select:text;-webkit-user-select:text; }
+    .digit:focus { border-color:var(--accent);background:rgba(0,229,255,0.06);box-shadow:0 0 0 3px rgba(0,229,255,0.15); }
+    .digit.filled { border-color:rgba(0,229,255,0.35); }
+    .digit.error-shake { border-color:var(--danger);animation:shake 0.4s ease; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+    .error { font-size:12px;color:var(--danger);min-height:20px;text-align:center;margin-bottom:14px;font-weight:600; }
+    .btn-primary { width:100%;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;color:white;font-weight:700;font-size:15px;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:8px; }
+    .btn-primary:hover { opacity:0.88;transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,229,255,0.3); }
+    .btn-primary:disabled { opacity:0.4;cursor:not-allowed;transform:none; }
+    .btn-back { width:100%;height:44px;border-radius:12px;background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted);font-size:13px;cursor:pointer;transition:0.2s;margin-top:10px;font-family:inherit; }
+    .btn-back:hover { border-color:var(--danger);color:var(--danger); }
+    .resend { text-align:center;font-size:12px;color:var(--muted);margin-top:18px; }
+    .resend-link { color:var(--accent);cursor:pointer;text-decoration:underline; }
+    .resend-link:disabled { opacity:0.4;cursor:not-allowed; }
+    .success-state { display:none;text-align:center;padding:20px 0; }
+    .success-icon { font-size:64px;margin-bottom:16px;animation:popIn 0.5s cubic-bezier(0.2,0.8,0.2,1); }
     @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
-    .dots { display:flex; justify-content:center; gap:8px; margin-top:28px; }
-    .dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.15); }
-    .dot.done { background:#00ff88; }
-    .dot.active { background:var(--accent); box-shadow:0 0 8px rgba(0,229,255,0.4); }
+    .success-title { font-size:22px;font-weight:900;margin-bottom:8px; }
+    .success-sub { font-size:13px;color:var(--muted); }
+    .dots { display:flex;justify-content:center;gap:8px;margin-top:28px; }
+    .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15); }
+    .dot.done { background:var(--success); }
+    .dot.active { background:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.4); }
     .spinner { animation:spin 1s linear infinite; }
     @keyframes spin { to{transform:rotate(360deg)} }
+    .debug-box { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 14px;font-size:11px;color:var(--muted);font-family:monospace;margin-bottom:20px;word-break:break-all; }
   </style>
 </head>
 <body>
@@ -49,31 +58,58 @@
     <div class="logo">Waevo</div>
     <div class="subtitle">Verificación</div>
     <div class="card">
-      <div id="form">
-        <div class="card-title"><i class="fas fa-mobile-screen" style="color:var(--accent)"></i> Código de verificación</div>
-        <div class="card-desc">Abre tu navegador Waevo. Aparecerá una ventana con el código de 6 dígitos.</div>
+
+      <!-- FORMULARIO -->
+      <div id="form-state">
+        <div class="card-title">
+          <i class="fas fa-mobile-screen" style="color:var(--accent)"></i>
+          Código de verificación
+        </div>
+        <div class="card-desc">
+          Abre tu navegador Waevo. Aparecerá una ventana con el código de 6 dígitos. Introdúcelo aquí.
+        </div>
+
+        <div class="info-box">
+          <i class="fas fa-circle-info"></i>
+          <span>El código aparece automáticamente en el navegador cuando pulsas "Continuar". Si no aparece, pulsa <b style="color:white">Reenviar</b>.</span>
+        </div>
+
+        <div class="debug-box" id="debug-id">Buscando ID...</div>
+
         <div class="countdown">
           <div class="countdown-num" id="timer">5:00</div>
           <div class="countdown-label">tiempo restante</div>
         </div>
-        <div class="code-inputs">
-          <input type="text" class="digit" maxlength="1" inputmode="numeric">
-          <input type="text" class="digit" maxlength="1" inputmode="numeric">
-          <input type="text" class="digit" maxlength="1" inputmode="numeric">
-          <input type="text" class="digit" maxlength="1" inputmode="numeric">
-          <input type="text" class="digit" maxlength="1" inputmode="numeric">
-          <input type="text" class="digit" maxlength="1" inputmode="numeric">
+
+        <div class="code-inputs" id="code-inputs">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          <input type="text" class="digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
         </div>
+
         <div class="error" id="err"></div>
-        <button class="btn" id="btn" onclick="verify()"><i class="fas fa-check"></i> Verificar</button>
-        <button class="btn-back" onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Volver</button>
-        <div class="resend">¿No ves el código? <span onclick="resend()">Reenviar</span></div>
+
+        <button class="btn-primary" id="verify-btn" onclick="verifyCode()">
+          <i class="fas fa-check"></i> Verificar
+        </button>
+        <button class="btn-back" onclick="window.location.href='index.html'">
+          <i class="fas fa-arrow-left"></i> Volver
+        </button>
+        <div class="resend">
+          ¿No ves el código? <span class="resend-link" id="resend-link" onclick="resendCode()">Reenviar código</span>
+        </div>
       </div>
-      <div class="success" id="success">
+
+      <!-- ÉXITO -->
+      <div class="success-state" id="success-state">
         <div class="success-icon">✅</div>
-        <div style="font-size:20px;font-weight:800;margin-bottom:8px">¡Verificado!</div>
-        <div style="font-size:13px;color:var(--muted)">Entrando al Dashboard...</div>
+        <div class="success-title">¡Verificado!</div>
+        <div class="success-sub">Entrando al Dashboard...</div>
       </div>
+
     </div>
     <div class="dots">
       <div class="dot done"></div>
@@ -84,76 +120,177 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    const db = getDatabase(initializeApp({
+    import { getDatabase, ref, get, set, remove, onValue }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // ── Firebase ──
+    const app = initializeApp({
       apiKey: "AIzaSyD13N4-9MjTrmlPwGP7mves0Exje4v2ACw",
       authDomain: "kahoot-8529e.firebaseapp.com",
       databaseURL: "https://kahoot-8529e-default-rtdb.firebaseio.com",
-      projectId: "kahoot-8529e"
-    }));
-    const userId = sessionStorage.getItem('waevo_login_id');
-    if (!userId) window.location.href = 'index.html';
+      projectId: "kahoot-8529e",
+      storageBucket: "kahoot-8529e.firebasestorage.app",
+      messagingSenderId: "313414356056",
+      appId: "1:313414356056:web:4aab4587f7df9393008e2d"
+    });
+    const db = getDatabase(app);
 
-    // Countdown
-    let s = 300;
+    // ── Recuperar el ID guardado en index.html ──
+    const storedId = sessionStorage.getItem('waevo_login_id');
+    if (!storedId) { window.location.href = 'index.html'; }
+
+    // Mostrar el ID que se está usando (para debug)
+    document.getElementById('debug-id').textContent = '🔑 Buscando código para: ' + storedId;
+
+    // ── Countdown 5 minutos ──
+    let secondsLeft = 300;
     const timerEl = document.getElementById('timer');
-    const t = setInterval(() => {
-      s--;
-      timerEl.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
-      if (s <= 0) { clearInterval(t); timerEl.style.color='var(--danger)'; document.getElementById('btn').disabled=true; document.getElementById('err').textContent='❌ Código expirado.'; }
+    const countdownInterval = setInterval(() => {
+      secondsLeft--;
+      const m = Math.floor(secondsLeft / 60);
+      const s = secondsLeft % 60;
+      timerEl.textContent = m + ':' + String(s).padStart(2, '0');
+      if (secondsLeft <= 60) timerEl.style.color = '#ffaa00';
+      if (secondsLeft <= 0) {
+        clearInterval(countdownInterval);
+        timerEl.style.color = 'var(--danger)';
+        document.getElementById('err').textContent = '❌ Código expirado. Pulsa Reenviar.';
+        document.getElementById('verify-btn').disabled = true;
+      }
     }, 1000);
 
-    // Cajas del código
+    // ── Cajas del código ──
     const digits = document.querySelectorAll('.digit');
     digits.forEach((inp, i) => {
       inp.addEventListener('input', () => {
-        inp.value = inp.value.replace(/\D/g,'');
-        if (inp.value && i < 5) digits[i+1].focus();
-        if (Array.from(digits).every(d => d.value)) window.verify();
+        inp.value = inp.value.replace(/\D/g, '');
+        if (inp.value) {
+          inp.classList.add('filled');
+          if (i < 5) digits[i + 1].focus();
+          if (Array.from(digits).every(d => d.value)) verifyCode();
+        } else {
+          inp.classList.remove('filled');
+        }
       });
-      inp.addEventListener('keydown', e => { if (e.key==='Backspace' && !inp.value && i>0) digits[i-1].focus(); });
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !inp.value && i > 0) {
+          digits[i - 1].value = '';
+          digits[i - 1].classList.remove('filled');
+          digits[i - 1].focus();
+        }
+      });
       inp.addEventListener('paste', e => {
-        const p = (e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');
-        if (p.length >= 6) { digits.forEach((d,idx) => d.value=p[idx]||''); digits[5].focus(); e.preventDefault(); window.verify(); }
+        const pasted = (e.clipboardData || window.clipboardData)
+          .getData('text').replace(/\D/g, '').slice(0, 6);
+        if (pasted.length > 0) {
+          digits.forEach((d, idx) => {
+            d.value = pasted[idx] || '';
+            d.classList.toggle('filled', !!d.value);
+          });
+          digits[Math.min(pasted.length, 5)].focus();
+          e.preventDefault();
+          if (pasted.length === 6) verifyCode();
+        }
       });
     });
 
-    window.verify = async function() {
-      const code = Array.from(digits).map(d=>d.value).join('');
-      const err = document.getElementById('err');
-      const btn = document.getElementById('btn');
-      err.textContent = '';
-      if (code.length < 6) { err.textContent='❌ Introduce los 6 dígitos.'; return; }
-      btn.disabled=true; btn.innerHTML='<i class="fas fa-circle-notch spinner"></i> Verificando...';
+    // ── Verificar código ──
+    window.verifyCode = async function() {
+      const code = Array.from(digits).map(d => d.value).join('');
+      const errEl = document.getElementById('err');
+      const btn   = document.getElementById('verify-btn');
+      errEl.textContent = '';
+
+      if (code.length < 6) {
+        errEl.textContent = '❌ Introduce los 6 dígitos.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Verificando...';
+
       try {
-        const snap = await get(ref(db, `waevo_verif/${userId}`));
-        if (!snap.exists()) { err.textContent='❌ Código no encontrado.'; btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Verificar'; return; }
-        const data = snap.val();
-        if (Date.now() > data.expires) { err.textContent='❌ Código expirado.'; btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Verificar'; return; }
-        if (data.code !== code) {
-          err.textContent='❌ Código incorrecto.';
-          digits.forEach(d => d.style.borderColor='var(--danger)');
-          setTimeout(() => digits.forEach(d => d.style.borderColor=''), 1500);
-          btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Verificar'; return;
+        // Buscar el código en Firebase — probar con el ID guardado
+        const snap = await get(ref(db, 'waevo_verif/' + storedId));
+
+        if (!snap.exists()) {
+          errEl.textContent = '❌ Código no encontrado. Pulsa Reenviar.';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-check"></i> Verificar';
+          return;
         }
-        const token = 'sess_' + Math.random().toString(36).slice(2).toUpperCase();
+
+        const data = snap.val();
+
+        if (Date.now() > data.expires) {
+          errEl.textContent = '❌ Código expirado. Pulsa Reenviar.';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-check"></i> Verificar';
+          return;
+        }
+
+        if (data.code !== code) {
+          errEl.textContent = '❌ Código incorrecto. Inténtalo de nuevo.';
+          digits.forEach(d => d.classList.add('error-shake'));
+          setTimeout(() => digits.forEach(d => d.classList.remove('error-shake')), 500);
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-check"></i> Verificar';
+          return;
+        }
+
+        // ✅ Código correcto
+        const token = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2).toUpperCase();
         sessionStorage.setItem('waevo_session', token);
-        sessionStorage.setItem('waevo_user_id', userId);
-        await set(ref(db, `waevo_sessions/${userId}`), { token, createdAt: Date.now(), expires: Date.now()+604800000 });
-        await remove(ref(db, `waevo_verif/${userId}`));
-        clearInterval(t);
-        document.getElementById('form').style.display='none';
-        document.getElementById('success').style.display='block';
-        setTimeout(() => window.location.href='dashboard.html', 1500);
-      } catch(e) { err.textContent='❌ Error de conexión.'; btn.disabled=false; btn.innerHTML='<i class="fas fa-check"></i> Verificar'; }
+        sessionStorage.setItem('waevo_user_id', storedId);
+
+        // Guardar sesión en Firebase
+        await set(ref(db, 'waevo_sessions/' + storedId), {
+          token,
+          createdAt: Date.now(),
+          expires: Date.now() + 7 * 24 * 60 * 60 * 1000
+        });
+
+        // Borrar el código de verificación
+        await remove(ref(db, 'waevo_verif/' + storedId));
+
+        // Mostrar éxito
+        clearInterval(countdownInterval);
+        document.getElementById('form-state').style.display = 'none';
+        document.getElementById('success-state').style.display = 'block';
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+
+      } catch (e) {
+        errEl.textContent = '❌ Error de conexión. Inténtalo de nuevo.';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> Verificar';
+      }
     };
 
-    window.resend = async function() {
+    // ── Reenviar código ──
+    window.resendCode = async function() {
+      const link = document.getElementById('resend-link');
+      link.style.opacity = '0.4';
+      link.style.pointerEvents = 'none';
+
       const code = String(Math.floor(100000 + Math.random() * 900000));
-      await set(ref(db, `waevo_verif/${userId}`), { code, expires: Date.now()+300000 });
-      s=300; document.getElementById('err').textContent=''; document.getElementById('btn').disabled=false; document.getElementById('btn').innerHTML='<i class="fas fa-check"></i> Verificar';
-      alert('✅ Nuevo código enviado a tu navegador Waevo.');
+      await set(ref(db, 'waevo_verif/' + storedId), {
+        code,
+        expires: Date.now() + 300000,
+        createdAt: Date.now()
+      });
+
+      secondsLeft = 300;
+      timerEl.style.color = 'var(--accent)';
+      document.getElementById('err').textContent = '';
+      document.getElementById('verify-btn').disabled = false;
+      document.getElementById('verify-btn').innerHTML = '<i class="fas fa-check"></i> Verificar';
+
+      setTimeout(() => {
+        link.style.opacity = '';
+        link.style.pointerEvents = '';
+      }, 10000);
     };
+
   </script>
 </body>
 </html>
