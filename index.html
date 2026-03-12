@@ -6,7 +6,7 @@
   <title>Waevo Dashboard — Login</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    :root { --accent:#00e5ff; --secondary:#bd00ff; --danger:#ff0055; --success:#00ff88; --muted:#94a3b8; --border:rgba(255,255,255,0.08); --card:rgba(15,15,22,0.95); }
+    :root { --accent:#00e5ff; --secondary:#bd00ff; --danger:#ff0055; --success:#00ff88; --warning:#ffaa00; --muted:#94a3b8; --border:rgba(255,255,255,0.08); --card:rgba(15,15,22,0.95); }
     * { box-sizing:border-box; margin:0; padding:0; outline:none; }
     body { background:linear-gradient(-45deg,#050505,#0a0a14,#0d0520,#050a14); background-size:400% 400%; animation:gradBG 12s ease infinite; color:#f8fafc; font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
     @keyframes gradBG { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
@@ -21,39 +21,36 @@
     .info-box { background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--muted);display:flex;gap:10px;margin-bottom:24px;line-height:1.6; }
     .info-box i { color:var(--accent);flex-shrink:0;margin-top:2px; }
     .label { font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:8px;display:block; }
-    .input { width:100%;height:54px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:0 18px;color:#f8fafc;font-size:13px;font-family:monospace;letter-spacing:1px;transition:0.3s;user-select:text;-webkit-user-select:text; }
-    .input::placeholder { color:rgba(255,255,255,0.2);font-family:'Segoe UI',system-ui,sans-serif;letter-spacing:normal;font-size:13px; }
-    .input:focus { border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:0 0 0 3px rgba(0,229,255,0.1);outline:none; }
-    .input.success { border-color:var(--success);background:rgba(0,255,136,0.04);box-shadow:0 0 0 3px rgba(0,255,136,0.1); }
-    .input.error-state { border-color:var(--danger);background:rgba(255,0,85,0.04);box-shadow:0 0 0 3px rgba(255,0,85,0.1); }
-    .char-count { font-size:11px;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between;align-items:center; }
-    .char-count span { font-family:monospace; }
-    .char-num { color:var(--accent);font-weight:700; }
+    .textarea { width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 18px;color:#f8fafc;font-size:12.5px;font-family:monospace;letter-spacing:0.5px;line-height:1.7;transition:0.3s;user-select:text;-webkit-user-select:text;resize:none;height:90px; }
+    .textarea::placeholder { color:rgba(255,255,255,0.2);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;letter-spacing:normal; }
+    .textarea:focus { border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:0 0 0 3px rgba(0,229,255,0.1);outline:none; }
+    .textarea.ok  { border-color:var(--success);background:rgba(0,255,136,0.03);box-shadow:0 0 0 3px rgba(0,255,136,0.08); }
+    .textarea.bad { border-color:var(--danger);background:rgba(255,0,85,0.03);box-shadow:0 0 0 3px rgba(255,0,85,0.08); }
+    .counter { font-size:11px;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between; }
+    .counter-num { font-family:monospace;font-weight:700; }
     .error { font-size:12px;color:var(--danger);min-height:20px;margin:8px 0;font-weight:600; }
-    .btn { width:100%;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;color:white;font-weight:700;font-size:15px;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px; }
+    .btn { width:100%;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;color:white;font-weight:700;font-size:15px;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px; }
     .btn:hover { opacity:0.88;transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,229,255,0.3); }
     .btn:disabled { opacity:0.4;cursor:not-allowed;transform:none; }
-
-    /* Estado de espera (verificando) */
-    .wait-state { display:none;text-align:center;padding:10px 0; }
-    .wait-ring { width:80px;height:80px;border-radius:50%;border:3px solid rgba(0,229,255,0.2);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto 20px; }
+    /* Estado espera */
+    .state { display:none; }
+    .state.show { display:block;animation:fadeIn 0.3s; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .wait-center { text-align:center;padding:10px 0; }
+    .wait-ring { width:72px;height:72px;border-radius:50%;border:3px solid rgba(0,229,255,0.15);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto 20px; }
     @keyframes spin { to{transform:rotate(360deg)} }
     .wait-title { font-size:18px;font-weight:800;margin-bottom:8px; }
-    .wait-sub { font-size:13px;color:var(--muted);line-height:1.6; }
-    .wait-timer { font-size:2.5rem;font-weight:900;color:var(--accent);font-family:monospace;margin:16px 0;text-shadow:0 0 20px rgba(0,229,255,0.4); }
-    .wait-timer-label { font-size:11px;color:var(--muted); }
-
-    /* Estado éxito */
-    .success-state { display:none;text-align:center;padding:10px 0; }
+    .wait-desc { font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px; }
+    .wait-num { font-size:3rem;font-weight:900;color:var(--accent);font-family:monospace;text-shadow:0 0 20px rgba(0,229,255,0.4);transition:color 0.3s; }
+    .wait-num-label { font-size:11px;color:var(--muted);margin-top:4px; }
+    .success-center { text-align:center;padding:10px 0; }
     .success-icon { font-size:64px;margin-bottom:16px;animation:popIn 0.5s cubic-bezier(0.2,0.8,0.2,1); }
     @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
-    .success-title { font-size:22px;font-weight:900;margin-bottom:8px; }
-    .success-sub { font-size:13px;color:var(--muted); }
-
     .dots { display:flex;justify-content:center;gap:8px;margin-top:28px; }
-    .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15); }
-    .dot.active { background:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.4); }
+    .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);transition:0.3s; }
+    .dot.on   { background:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.4); }
     .dot.done { background:var(--success); }
+    @keyframes spinBtn { to{transform:rotate(360deg)} }
   </style>
 </head>
 <body>
@@ -64,59 +61,55 @@
 
     <div class="card">
 
-      <!-- ESTADO 1: Introducir código -->
-      <div id="state-input">
+      <!-- PASO 1: introducir código -->
+      <div id="s-input" class="state show">
         <div class="card-title">
           <i class="fas fa-key" style="color:var(--accent)"></i>
           Código de acceso
         </div>
-        <div class="card-desc">
-          Introduce tu código personal de 52 caracteres. Lo encontrarás en el panel de créditos de tu navegador Waevo.
-        </div>
+        <div class="card-desc">Introduce tu código personal de 52 caracteres para acceder al Dashboard.</div>
         <div class="info-box">
           <i class="fas fa-circle-info"></i>
-          <span>Abre Waevo → panel de créditos → sección <b style="color:white">Tu código Dashboard</b>. Cópialo y pégalo aquí.</span>
+          <span>Abre Waevo → panel de <b style="color:white">Créditos</b> → sección <b style="color:white">🔑 Código Dashboard</b> → toca para copiar → pégalo aquí.</span>
         </div>
-
-        <label class="label">Tu código personal (52 caracteres)</label>
-        <textarea class="input" id="code-input" rows="3"
-          placeholder="Pega aquí tu código de 52 caracteres..."
-          style="height:auto;padding:14px 18px;resize:none;line-height:1.6"
-          oninput="onCodeInput(this)"></textarea>
-        <div class="char-count">
-          <span>Caracteres introducidos: <span class="char-num" id="char-count">0</span> / 52</span>
-          <span id="char-status"></span>
+        <label class="label">Tu código personal</label>
+        <textarea class="textarea" id="code-ta" placeholder="Pega aquí tu código de 52 caracteres..." oninput="onInput(this)"></textarea>
+        <div class="counter">
+          <span>Caracteres: <span class="counter-num" id="cnt" style="color:var(--muted)">0</span> / 52</span>
+          <span id="cnt-msg"></span>
         </div>
-
         <div class="error" id="err"></div>
-
-        <button class="btn" id="login-btn" onclick="startLogin()">
+        <button class="btn" id="go-btn" onclick="doLogin()">
           <i class="fas fa-arrow-right"></i> Acceder al Dashboard
         </button>
       </div>
 
-      <!-- ESTADO 2: Esperando verificación -->
-      <div class="wait-state" id="state-wait">
-        <div class="wait-ring"></div>
-        <div class="wait-title">Verificando identidad</div>
-        <div class="wait-sub">Comprobando tu código personal.<br>Por favor espera...</div>
-        <div class="wait-timer" id="wait-timer">60</div>
-        <div class="wait-timer-label">segundos</div>
+      <!-- PASO 2: verificando -->
+      <div id="s-wait" class="state">
+        <div class="wait-center">
+          <div class="wait-ring"></div>
+          <div class="wait-title">Verificando identidad</div>
+          <div class="wait-desc">Comprobando tu código personal.<br>Por favor espera un momento.</div>
+          <div class="wait-num" id="wait-num">60</div>
+          <div class="wait-num-label">segundos</div>
+        </div>
       </div>
 
-      <!-- ESTADO 3: Verificado -->
-      <div class="success-state" id="state-success">
-        <div class="success-icon">✅</div>
-        <div class="success-title">¡Acceso concedido!</div>
-        <div class="success-sub">Entrando al Dashboard...</div>
+      <!-- PASO 3: éxito -->
+      <div id="s-ok" class="state">
+        <div class="success-center">
+          <div class="success-icon">✅</div>
+          <div style="font-size:22px;font-weight:900;margin-bottom:8px">¡Acceso concedido!</div>
+          <div style="font-size:13px;color:var(--muted)">Entrando al Dashboard...</div>
+        </div>
       </div>
 
     </div>
 
     <div class="dots">
-      <div class="dot active" id="dot1"></div>
-      <div class="dot" id="dot2"></div>
-      <div class="dot" id="dot3"></div>
+      <div class="dot on"   id="d1"></div>
+      <div class="dot"      id="d2"></div>
+      <div class="dot"      id="d3"></div>
     </div>
   </div>
 
@@ -124,7 +117,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    const app = initializeApp({
+    const db = getDatabase(initializeApp({
       apiKey: "AIzaSyD13N4-9MjTrmlPwGP7mves0Exje4v2ACw",
       authDomain: "kahoot-8529e.firebaseapp.com",
       databaseURL: "https://kahoot-8529e-default-rtdb.firebaseio.com",
@@ -132,10 +125,9 @@
       storageBucket: "kahoot-8529e.firebasestorage.app",
       messagingSenderId: "313414356056",
       appId: "1:313414356056:web:4aab4587f7df9393008e2d"
-    });
-    const db = getDatabase(app);
+    }));
 
-    // ── Misma función de generación que en el navegador ──
+    // Misma función de generación — DEBE ser idéntica a la del navegador
     function generateCode(seed) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
       let hash = 0;
@@ -152,120 +144,111 @@
       return result;
     }
 
-    // ── Contador de caracteres en tiempo real ──
-    window.onCodeInput = function(el) {
+    // Contador en tiempo real
+    window.onInput = function(el) {
       const len = el.value.trim().length;
-      const countEl  = document.getElementById('char-count');
-      const statusEl = document.getElementById('char-status');
-      countEl.textContent = len;
-      if (len === 0) {
-        countEl.style.color = '#94a3b8';
-        statusEl.textContent = '';
-        el.classList.remove('success', 'error-state');
-      } else if (len < 52) {
-        countEl.style.color = '#ffaa00';
-        statusEl.innerHTML = '<span style="color:#ffaa00">⚠ Faltan ' + (52 - len) + '</span>';
-        el.classList.remove('success', 'error-state');
-      } else if (len === 52) {
-        countEl.style.color = 'var(--success)';
-        statusEl.innerHTML = '<span style="color:var(--success)">✓ Listo</span>';
-        el.classList.add('success');
-        el.classList.remove('error-state');
-      } else {
-        countEl.style.color = 'var(--danger)';
-        statusEl.innerHTML = '<span style="color:var(--danger)">✗ Demasiados caracteres</span>';
-        el.classList.add('error-state');
-        el.classList.remove('success');
-      }
+      const cntEl  = document.getElementById('cnt');
+      const msgEl  = document.getElementById('cnt-msg');
+      cntEl.textContent = len;
+      el.classList.remove('ok','bad');
+      if (len === 0)       { cntEl.style.color = 'var(--muted)';    msgEl.innerHTML = ''; }
+      else if (len < 52)   { cntEl.style.color = 'var(--warning)';  msgEl.innerHTML = '<span style="color:var(--warning)">⚠ Faltan '+(52-len)+'</span>'; }
+      else if (len === 52) { cntEl.style.color = 'var(--success)';  msgEl.innerHTML = '<span style="color:var(--success)">✓ Listo</span>'; el.classList.add('ok'); }
+      else                 { cntEl.style.color = 'var(--danger)';   msgEl.innerHTML = '<span style="color:var(--danger)">✗ '+(len-52)+' de más</span>'; el.classList.add('bad'); }
     };
 
-    // ── Login ──
-    window.startLogin = async function() {
-      const inputCode = document.getElementById('code-input').value.trim();
+    function show(id) {
+      ['s-input','s-wait','s-ok'].forEach(s => {
+        document.getElementById(s).classList.remove('show');
+      });
+      document.getElementById(id).classList.add('show');
+    }
+
+    window.doLogin = async function() {
+      const inputCode = document.getElementById('code-ta').value.trim();
       const err = document.getElementById('err');
-      const btn = document.getElementById('login-btn');
+      const btn = document.getElementById('go-btn');
       err.textContent = '';
 
-      if (!inputCode) { err.textContent = '❌ Introduce tu código.'; return; }
-      if (inputCode.length !== 52) { err.textContent = '❌ El código debe tener exactamente 52 caracteres. Tienes ' + inputCode.length + '.'; return; }
+      if (!inputCode)         { err.textContent = '❌ Pega tu código primero.'; return; }
+      if (inputCode.length !== 52) { err.textContent = '❌ El código tiene que tener exactamente 52 caracteres. Tienes ' + inputCode.length + '.'; return; }
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch" style="animation:spin 1s linear infinite"></i> Buscando...';
+      btn.innerHTML = '<i class="fas fa-circle-notch" style="animation:spinBtn 1s linear infinite;display:inline-block"></i> Buscando...';
 
       try {
-        // Buscar en Firebase qué usuario tiene este código
+        // Cargar todos los códigos de Firebase
         const snap = await get(ref(db, 'waevo_dash_codes'));
 
         if (!snap.exists()) {
-          err.textContent = '❌ No hay usuarios registrados aún. Instala la actualización en Waevo primero.';
+          err.textContent = '❌ Ningún usuario tiene el código generado todavía. Instala la actualización en Waevo primero.';
           btn.disabled = false;
           btn.innerHTML = '<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
           return;
         }
 
-        const allCodes = snap.val();
-        let matchedUserId = null;
+        const all = snap.val();
+        let foundUserId = null;
 
-        // Buscar qué usuario tiene exactamente este código
-        Object.entries(allCodes).forEach(([uid, data]) => {
-          if (data.code === inputCode) {
-            matchedUserId = uid;
-          }
-        });
-
-        // Doble verificación: regenerar el código desde el ID y comparar
-        // Esto asegura que nadie puede falsificar el código
-        if (matchedUserId) {
-          const regenCode = generateCode(matchedUserId);
-          if (regenCode !== inputCode) {
-            matchedUserId = null; // código no válido aunque esté en Firebase
+        // Buscar qué userId tiene exactamente este código en Firebase
+        for (const [uid, data] of Object.entries(all)) {
+          if (data.code && data.code === inputCode) {
+            // Verificación doble: regenerar desde el ID y comparar
+            // Así es imposible falsificarlo aunque alguien vea Firebase
+            const regen = generateCode(uid);
+            if (regen === inputCode) {
+              foundUserId = uid;
+              break;
+            }
           }
         }
 
-        if (!matchedUserId) {
-          err.textContent = '❌ Código incorrecto. Cópialo exactamente desde Waevo.';
-          document.getElementById('code-input').classList.add('error-state');
-          document.getElementById('code-input').classList.remove('success');
+        if (!foundUserId) {
+          err.textContent = '❌ Código incorrecto. Cópialo exactamente desde el widget de Créditos en Waevo.';
+          document.getElementById('code-ta').classList.add('bad');
+          document.getElementById('code-ta').classList.remove('ok');
           btn.disabled = false;
           btn.innerHTML = '<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
           return;
         }
 
-        // ── Código correcto: mostrar estado de espera ──
-        sessionStorage.setItem('waevo_user_id', matchedUserId);
-        sessionStorage.setItem('waevo_session', 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2));
+        // ✅ Código correcto — guardar sesión y mostrar espera
+        const token = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2).toUpperCase();
+        sessionStorage.setItem('waevo_user_id', foundUserId);
+        sessionStorage.setItem('waevo_session', token);
 
-        document.getElementById('state-input').style.display = 'none';
-        document.getElementById('state-wait').style.display  = 'block';
-        document.getElementById('dot1').classList.remove('active');
-        document.getElementById('dot1').classList.add('done');
-        document.getElementById('dot2').classList.add('active');
+        show('s-wait');
+        document.getElementById('d1').classList.remove('on');
+        document.getElementById('d1').classList.add('done');
+        document.getElementById('d2').classList.add('on');
 
-        // Countdown de 60 segundos
+        // Countdown 60 segundos
         let secs = 60;
-        const timerEl = document.getElementById('wait-timer');
-        const waitInterval = setInterval(async () => {
+        const numEl = document.getElementById('wait-num');
+        const interval = setInterval(async () => {
           secs--;
-          timerEl.textContent = secs;
-          if (secs <= 20) timerEl.style.color = '#ffaa00';
+          numEl.textContent = secs;
+          if (secs <= 20) numEl.style.color = 'var(--warning)';
+          if (secs <= 5)  numEl.style.color = 'var(--danger)';
           if (secs <= 0) {
-            clearInterval(waitInterval);
-            // Verificado — entrar al dashboard
-            await set(ref(db, 'waevo_sessions/' + matchedUserId), {
-              token: sessionStorage.getItem('waevo_session'),
+            clearInterval(interval);
+            // Guardar sesión en Firebase
+            await set(ref(db, 'waevo_sessions/' + foundUserId), {
+              token,
+              userId: foundUserId,
               createdAt: Date.now(),
               expires: Date.now() + 7 * 24 * 60 * 60 * 1000
             });
-            document.getElementById('state-wait').style.display    = 'none';
-            document.getElementById('state-success').style.display = 'block';
-            document.getElementById('dot2').classList.remove('active');
-            document.getElementById('dot2').classList.add('done');
-            document.getElementById('dot3').classList.add('active');
+            // Éxito
+            show('s-ok');
+            document.getElementById('d2').classList.remove('on');
+            document.getElementById('d2').classList.add('done');
+            document.getElementById('d3').classList.add('on');
             setTimeout(() => window.location.href = 'dashboard.html', 1500);
           }
         }, 1000);
 
-      } catch(e) {
+      } catch (e) {
         err.textContent = '❌ Error de conexión. Inténtalo de nuevo.';
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
