@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waevo Dashboard — Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --accent: #00e5ff;
+      --secondary: #bd00ff;
+      --danger: #ff0055;
+      --bg: #050505;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,0.08);
+      --card: rgba(15,15,22,0.95);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh; display: flex;
+      align-items: center; justify-content: center; overflow: hidden;
+      background: linear-gradient(-45deg, #050505, #0a0a14, #0d0520, #050a14);
+      background-size: 400% 400%;
+      animation: gradBG 12s ease infinite;
+    }
+    @keyframes gradBG {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 50px 50px; pointer-events: none;
+    }
+    .wrap {
+      position: relative; z-index: 1;
+      width: 420px; max-width: 94vw;
+      animation: slideUp 0.5s cubic-bezier(0.2,0.8,0.2,1);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .logo {
+      text-align: center; margin-bottom: 10px;
+      font-size: 3.2rem; font-weight: 900; letter-spacing: -2px;
+      background: linear-gradient(135deg, #00e5ff, #bd00ff, #ff0055);
+      -webkit-background-clip: text; color: transparent;
+      filter: drop-shadow(0 0 20px rgba(189,0,255,0.5));
+    }
+    .subtitle {
+      text-align: center; font-size: 12px; color: var(--muted);
+      letter-spacing: 3px; text-transform: uppercase; margin-bottom: 36px;
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 36px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+      backdrop-filter: blur(20px);
+    }
+    .card-title {
+      font-size: 18px; font-weight: 700; margin-bottom: 6px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-desc { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+    .info-box {
+      background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 12px; padding: 14px 16px;
+      font-size: 12px; color: var(--muted);
+      display: flex; gap: 10px; margin-bottom: 24px; line-height: 1.5;
+    }
+    .info-box i { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+    .label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; display: block; }
+    .input {
+      width: 100%; height: 50px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 0 18px;
+      color: var(--text); font-size: 15px; font-family: inherit; transition: 0.3s;
+      user-select: text; -webkit-user-select: text;
+    }
+    .input::placeholder { color: rgba(255,255,255,0.2); }
+    .input:focus { border-color: var(--accent); background: rgba(0,229,255,0.04); box-shadow: 0 0 0 3px rgba(0,229,255,0.1); outline: none; }
+    .hint { font-size: 11px; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 5px; }
+    .error { font-size: 12px; color: var(--danger); min-height: 18px; margin: 6px 0; }
+    .btn {
+      width: 100%; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      border: none; color: white; font-weight: 700; font-size: 15px;
+      cursor: pointer; transition: 0.3s;
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,229,255,0.3); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .dots { display: flex; justify-content: center; gap: 8px; margin-top: 28px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+    .dot.active { background: var(--accent); box-shadow: 0 0 8px rgba(0,229,255,0.4); }
+    .spinner { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="wrap">
+    <div class="logo">Waevo</div>
+    <div class="subtitle">Dashboard & Ajustes</div>
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-fingerprint" style="color:var(--accent)"></i>
+        Identificación
+      </div>
+      <div class="card-desc">Introduce tu ID de Waevo para acceder al Dashboard.</div>
+      <div class="info-box">
+        <i class="fas fa-circle-info"></i>
+        <span>Tu ID aparece en la esquina inferior izquierda del navegador, debajo de tus créditos AB. Empieza por <b style="color:white">usr_</b></span>
+      </div>
+      <label class="label">Tu ID de Waevo</label>
+      <input type="text" class="input" id="uid" placeholder="usr_XXXXXX_XXXXXXXX" autocomplete="off" spellcheck="false">
+      <div class="hint"><i class="fas fa-lock" style="color:var(--accent);font-size:10px"></i> Se enviará un código al navegador</div>
+      <div class="error" id="err"></div>
+      <button class="btn" id="btn" onclick="go()"><i class="fas fa-arrow-right"></i> Continuar</button>
+    </div>
+    <div class="dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    const db = getDatabase(initializeApp({
+      apiKey: "AIzaSyD13N4-9MjTrmlPwGP7mves0Exje4v2ACw",
+      authDomain: "kahoot-8529e.firebaseapp.com",
+      databaseURL: "https://kahoot-8529e-default-rtdb.firebaseio.com",
+      projectId: "kahoot-8529e"
+    }));
+    window.go = async function() {
+      const id  = document.getElementById('uid').value.trim();
+      const err = document.getElementById('err');
+      const btn = document.getElementById('btn');
+      err.textContent = '';
+      if (!id) { err.textContent = '❌ Introduce tu ID.'; return; }
+      if (!id.startsWith('usr_')) { err.textContent = '❌ El ID debe empezar por usr_'; return; }
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Verificando...';
+      try {
+        const snap = await get(ref(db, `alexbrowser_users/${id}`));
+        if (!snap.exists()) {
+          err.textContent = '❌ ID no encontrado. Abre Waevo al menos una vez.';
+          btn.disabled = false; btn.innerHTML = '<i class="fas fa-arrow-right"></i> Continuar'; return;
+        }
+        const code = String(Math.floor(100000 + Math.random() * 900000));
+        await set(ref(db, `waevo_verif/${id}`), { code, expires: Date.now() + 300000 });
+        sessionStorage.setItem('waevo_login_id', id);
+        window.location.href = 'verify.html';
+      } catch(e) {
+        err.textContent = '❌ Error de conexión.';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-arrow-right"></i> Continuar';
+      }
+    };
+    document.getElementById('uid').addEventListener('keypress', e => { if (e.key === 'Enter') window.go(); });
+  </script>
+</body>
+</html>
