@@ -21,8 +21,8 @@
     .info-box { background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--muted);display:flex;gap:10px;margin-bottom:24px;line-height:1.5; }
     .info-box i { color:var(--accent);flex-shrink:0;margin-top:1px; }
     .label { font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:8px;display:block; }
-    .input { width:100%;height:50px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:0 18px;color:#f8fafc;font-size:15px;font-family:inherit;transition:0.3s;user-select:text;-webkit-user-select:text;text-transform:uppercase; }
-    .input::placeholder { color:rgba(255,255,255,0.2);text-transform:none; }
+    .input { width:100%;height:50px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:0 18px;color:#f8fafc;font-size:15px;font-family:monospace;transition:0.3s;user-select:text;-webkit-user-select:text;text-transform:uppercase;letter-spacing:2px; }
+    .input::placeholder { color:rgba(255,255,255,0.2);text-transform:none;letter-spacing:normal;font-family:'Segoe UI',system-ui,sans-serif; }
     .input:focus { border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:0 0 0 3px rgba(0,229,255,0.1);outline:none; }
     .hint { font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:5px; }
     .error { font-size:12px;color:var(--danger);min-height:18px;margin:6px 0; }
@@ -46,13 +46,13 @@
         <i class="fas fa-fingerprint" style="color:var(--accent)"></i>
         Identificación
       </div>
-      <div class="card-desc">Introduce tu ID de Waevo para acceder al Dashboard.</div>
+      <div class="card-desc">Introduce tu ID de Waevo para recibir el código en el navegador.</div>
       <div class="info-box">
         <i class="fas fa-circle-info"></i>
-        <span>Tu ID aparece en el widget de créditos del navegador. Formato: <b style="color:white">USR_XXX</b> (solo los primeros 3 caracteres después de USR_)</span>
+        <span>Tu ID está en el widget de créditos. Introduce <b style="color:white">USR_</b> seguido de los primeros <b style="color:white">6 caracteres</b>. Ejemplo: <b style="color:var(--accent)">USR_VGDAQM</b></span>
       </div>
       <label class="label">Tu ID de Waevo</label>
-      <input type="text" class="input" id="uid" placeholder="USR_XXX" autocomplete="off" spellcheck="false" maxlength="7">
+      <input type="text" class="input" id="uid" placeholder="USR_XXXXXX" autocomplete="off" spellcheck="false" maxlength="10">
       <div class="hint"><i class="fas fa-lock" style="color:var(--accent);font-size:10px"></i> Se enviará un código a tu navegador Waevo</div>
       <div class="error" id="err"></div>
       <button class="btn" id="btn" onclick="go()"><i class="fas fa-arrow-right"></i> Continuar</button>
@@ -75,50 +75,51 @@
       projectId: "kahoot-8529e"
     }));
 
-    // Auto-mayúsculas mientras escribe
-    document.getElementById('uid').addEventListener('input', function() {
-      const pos = this.selectionStart;
-      this.value = this.value.toUpperCase();
-      this.setSelectionRange(pos, pos);
-      // Auto-añadir USR_ si empieza a escribir sin él
-      if (this.value.length > 0 && !this.value.startsWith('USR_')) {
-        this.value = 'USR_' + this.value.replace(/^USR_?/i, '');
+    // Auto-mayúsculas y auto-prefijo USR_
+    const input = document.getElementById('uid');
+    input.addEventListener('input', function() {
+      let val = this.value.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+      if (val.length > 0 && !val.startsWith('USR_')) {
+        if ('USR_'.startsWith(val)) {
+          val = val; // están escribiendo el prefijo
+        } else {
+          val = 'USR_' + val.replace(/^USR_?/i, '');
+        }
       }
+      this.value = val;
     });
 
     window.go = async function() {
-      const raw = document.getElementById('uid').value.trim().toUpperCase();
+      const raw = input.value.trim().toUpperCase();
       const err = document.getElementById('err');
       const btn = document.getElementById('btn');
       err.textContent = '';
 
-      // Validar formato USR_XXX (exactamente 3 chars después del _)
       if (!raw) { err.textContent = '❌ Introduce tu ID.'; return; }
       if (!raw.startsWith('USR_')) { err.textContent = '❌ El ID debe empezar por USR_'; return; }
 
-      const suffix = raw.slice(4); // lo que viene después de USR_
-      if (suffix.length < 3) { err.textContent = '❌ Introduce al menos 3 caracteres después de USR_'; return; }
+      const suffix = raw.slice(4);
+      if (suffix.length < 6) {
+        err.textContent = '❌ Introduce los 6 caracteres después de USR_  (ej: USR_VGDAQM)';
+        return;
+      }
 
-      // El ID que se busca en Firebase — probar con el ID completo que genera Waevo
-      // Waevo genera IDs tipo: usr_fp_XXXXXX  o  usr_XXXXXX
-      // Buscamos por los primeros 3 chars del suffix en todos los usuarios
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Enviando código...';
 
       try {
-        // Generar código y guardarlo en Firebase con el ID tal como lo escribió
         const code = String(Math.floor(100000 + Math.random() * 900000));
-        // Guardar con el ID en minúsculas para que el navegador lo encuentre
-        const idForFirebase = raw.toLowerCase(); // usr_xxx
 
-        await set(ref(db, 'waevo_verif/' + idForFirebase), {
+        // Guardar en Firebase con el ID en minúsculas (como lo genera Waevo internamente)
+        const idFirebase = 'usr_' + suffix.slice(0, 6).toLowerCase();
+
+        await set(ref(db, 'waevo_verif/' + idFirebase), {
           code,
           expires: Date.now() + 300000,
           createdAt: Date.now()
         });
 
-        sessionStorage.setItem('waevo_login_id', idForFirebase);
-        sessionStorage.setItem('waevo_login_display', raw);
+        sessionStorage.setItem('waevo_login_id', idFirebase);
         window.location.href = 'verify.html';
 
       } catch(e) {
@@ -128,9 +129,7 @@
       }
     };
 
-    document.getElementById('uid').addEventListener('keypress', e => {
-      if (e.key === 'Enter') window.go();
-    });
+    input.addEventListener('keypress', e => { if (e.key === 'Enter') window.go(); });
   </script>
 </body>
 </html>
