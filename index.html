@@ -40,15 +40,15 @@
     .wait-center { text-align:center;padding:10px 0; }
     .wait-ring { width:72px;height:72px;border-radius:50%;border:3px solid rgba(0,229,255,0.15);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto 20px; }
     @keyframes spin { to{transform:rotate(360deg)} }
-    .wait-num { font-size:3rem;font-weight:900;color:var(--accent);font-family:monospace;text-shadow:0 0 20px rgba(0,229,255,0.4);transition:color 0.3s; }
+    .wait-num { font-size:3rem;font-weight:900;color:var(--accent);font-family:monospace;text-shadow:0 0 20px rgba(0,229,255,0.4); }
     .success-center { text-align:center;padding:10px 0; }
     .success-icon { font-size:64px;margin-bottom:16px;animation:popIn 0.5s cubic-bezier(0.2,0.8,0.2,1); }
     @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
     .dots { display:flex;justify-content:center;gap:8px;margin-top:28px; }
     .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);transition:0.3s; }
-    .dot.on { background:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.4); }
+    .dot.on   { background:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.4); }
     .dot.done { background:var(--success); }
-    .spinner-inline { animation:spin 1s linear infinite;display:inline-block; }
+    .spin { animation:spin 1s linear infinite;display:inline-block; }
   </style>
 </head>
 <body>
@@ -61,12 +61,8 @@
     <div class="subtitle">Dashboard & Ajustes</div>
     <div class="card">
 
-      <!-- PASO 1: introducir clave -->
       <div id="s-input" class="state show">
-        <div class="card-title">
-          <i class="fas fa-key" style="color:var(--accent)"></i>
-          Clave de acceso
-        </div>
+        <div class="card-title"><i class="fas fa-key" style="color:var(--accent)"></i> Clave de acceso</div>
         <div class="card-desc">Introduce tu clave personal de 52 caracteres para acceder al Dashboard.</div>
         <div class="info-box">
           <i class="fas fa-circle-info"></i>
@@ -84,7 +80,6 @@
         </button>
       </div>
 
-      <!-- PASO 2: verificando -->
       <div id="s-wait" class="state">
         <div class="wait-center">
           <div class="wait-ring"></div>
@@ -95,7 +90,6 @@
         </div>
       </div>
 
-      <!-- PASO 3: éxito -->
       <div id="s-ok" class="state">
         <div class="success-center">
           <div class="success-icon">✅</div>
@@ -126,16 +120,32 @@
       appId:"1:313414356056:web:4aab4587f7df9393008e2d"
     }));
 
+    function generateCode(seed) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+      let hash = 0;
+      for (let i = 0; i < seed.length; i++) {
+        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+        hash = hash & hash;
+      }
+      let result = '';
+      let current = Math.abs(hash);
+      for (let i = 0; i < 52; i++) {
+        current = (current * 1664525 + 1013904223) & 0xffffffff;
+        result += chars[Math.abs(current) % chars.length];
+      }
+      return result;
+    }
+
     window.onInput = function(el) {
       const len = el.value.trim().length;
       const cntEl = document.getElementById('cnt');
       const msgEl = document.getElementById('cnt-msg');
       cntEl.textContent = len;
       el.classList.remove('ok','bad');
-      if      (len === 0)  { cntEl.style.color='var(--muted)';    msgEl.innerHTML=''; }
-      else if (len < 52)   { cntEl.style.color='var(--warning)';  msgEl.innerHTML='<span style="color:var(--warning)">⚠ Faltan '+(52-len)+'</span>'; }
-      else if (len === 52) { cntEl.style.color='var(--success)';  msgEl.innerHTML='<span style="color:var(--success)">✓ Listo</span>'; el.classList.add('ok'); }
-      else                 { cntEl.style.color='var(--danger)';   msgEl.innerHTML='<span style="color:var(--danger)">✗ '+(len-52)+' de más</span>'; el.classList.add('bad'); }
+      if      (len === 0)  { cntEl.style.color='var(--muted)';   msgEl.innerHTML=''; }
+      else if (len < 52)   { cntEl.style.color='var(--warning)'; msgEl.innerHTML='<span style="color:var(--warning)">⚠ Faltan '+(52-len)+'</span>'; }
+      else if (len === 52) { cntEl.style.color='var(--success)'; msgEl.innerHTML='<span style="color:var(--success)">✓ Listo</span>'; el.classList.add('ok'); }
+      else                 { cntEl.style.color='var(--danger)';  msgEl.innerHTML='<span style="color:var(--danger)">✗ '+(len-52)+' de más</span>'; el.classList.add('bad'); }
     };
 
     function show(id) {
@@ -153,37 +163,29 @@
       if (inputCode.length !== 52) { err.textContent='❌ La clave tiene que tener exactamente 52 caracteres. Tienes '+inputCode.length+'.'; return; }
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch spinner-inline"></i> Buscando...';
+      btn.innerHTML = '<i class="fas fa-circle-notch spin"></i> Buscando...';
 
       try {
-        const snap = await get(ref(db, 'waevo_dash_codes'));
-
-        if (!snap.exists()) {
-          err.textContent = '❌ No hay usuarios registrados. Entra en waevo-clave.vercel.app primero.';
-          btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
-          return;
-        }
-
-        const all = snap.val();
         let foundUserId = null;
 
-        // Comparación directa — sin regenerar matemáticamente
-        // Solo compara el código guardado en Firebase con el introducido
-        for (const [uid, data] of Object.entries(all)) {
-          if (data.code && data.code === inputCode) {
-            foundUserId = uid;
-            break;
+        // BÚSQUEDA 1: en waevo_dash_codes (usuarios con actualización)
+        const codesSnap = await get(ref(db, 'waevo_dash_codes'));
+        if (codesSnap.exists()) {
+          for (const [uid, data] of Object.entries(codesSnap.val())) {
+            if (data.code && data.code === inputCode) {
+              foundUserId = uid;
+              break;
+            }
           }
         }
 
+        // BÚSQUEDA 2: en alexbrowser_users (TODOS los usuarios)
+        // Regenera el código desde el ID y compara — funciona sin instalar nada
         if (!foundUserId) {
-          // Buscar también en alexbrowser_users por si acaso
           const usersSnap = await get(ref(db, 'alexbrowser_users'));
           if (usersSnap.exists()) {
-            // Regenerar para cada usuario y comparar
             for (const [uid] of Object.entries(usersSnap.val())) {
-              const regen = generateCode(uid);
-              if (regen === inputCode) {
+              if (generateCode(uid) === inputCode) {
                 foundUserId = uid;
                 break;
               }
@@ -195,7 +197,8 @@
           err.textContent = '❌ Clave incorrecta. Obtén tu clave en waevo-clave.vercel.app';
           document.getElementById('code-ta').classList.add('bad');
           document.getElementById('code-ta').classList.remove('ok');
-          btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
+          btn.disabled=false;
+          btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
           return;
         }
 
@@ -217,8 +220,7 @@
           if (secs <= 0) {
             clearInterval(interval);
             await set(ref(db, 'waevo_sessions/' + foundUserId), {
-              token,
-              userId: foundUserId,
+              token, userId: foundUserId,
               createdAt: Date.now(),
               expires: Date.now() + 7*24*60*60*1000
             });
@@ -232,26 +234,10 @@
 
       } catch(e) {
         err.textContent = '❌ Error de conexión. Inténtalo de nuevo.';
-        btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
+        btn.disabled=false;
+        btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
       }
     };
-
-    // Función generateCode también en el login como fallback
-    function generateCode(seed) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
-      let hash = 0;
-      for (let i = 0; i < seed.length; i++) {
-        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-        hash = hash & hash;
-      }
-      let result = '';
-      let current = Math.abs(hash);
-      for (let i = 0; i < 52; i++) {
-        current = (current * 1664525 + 1013904223) & 0xffffffff;
-        result += chars[Math.abs(current) % chars.length];
-      }
-      return result;
-    }
   </script>
 </body>
 </html>
