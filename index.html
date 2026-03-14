@@ -21,11 +21,12 @@
     .info-box { background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--muted);display:flex;gap:10px;margin-bottom:24px;line-height:1.6; }
     .info-box i { color:var(--accent);flex-shrink:0;margin-top:2px; }
     .label { font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:8px;display:block; }
-    .input { width:100%;height:52px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:0 18px;color:#f8fafc;font-size:14px;font-family:monospace;transition:0.3s;user-select:text;-webkit-user-select:text; }
-    .input::placeholder { color:rgba(255,255,255,0.2);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px; }
-    .input:focus { border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:0 0 0 3px rgba(0,229,255,0.1);outline:none; }
-    .input.ok  { border-color:var(--success);background:rgba(0,255,136,0.03); }
-    .input.bad { border-color:var(--danger);background:rgba(255,0,85,0.03); }
+    .textarea { width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 18px;color:#f8fafc;font-size:12.5px;font-family:monospace;letter-spacing:0.5px;line-height:1.7;transition:0.3s;user-select:text;-webkit-user-select:text;resize:none;height:90px; }
+    .textarea::placeholder { color:rgba(255,255,255,0.2);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;letter-spacing:normal; }
+    .textarea:focus { border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:0 0 0 3px rgba(0,229,255,0.1);outline:none; }
+    .textarea.ok  { border-color:var(--success);background:rgba(0,255,136,0.03); }
+    .textarea.bad { border-color:var(--danger);background:rgba(255,0,85,0.03); }
+    .counter { font-size:11px;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between; }
     .error { font-size:12px;color:var(--danger);min-height:20px;margin:8px 0;font-weight:600; }
     .btn { width:100%;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;color:white;font-weight:700;font-size:15px;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px; }
     .btn:hover { opacity:0.88;transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,229,255,0.3); }
@@ -55,28 +56,27 @@
     <div class="card">
 
       <div id="s-input" class="state show">
-        <div class="card-title">
-          <i class="fas fa-key" style="color:var(--accent)"></i>
-          Código de acceso
-        </div>
-        <div class="card-desc">Introduce el código de acceso para entrar al Dashboard de Waevo.</div>
+        <div class="card-title"><i class="fas fa-key" style="color:var(--accent)"></i> Código de acceso</div>
+        <div class="card-desc">Introduce tu clave personal de 52 caracteres para acceder al Dashboard.</div>
         <div class="info-box">
           <i class="fas fa-circle-info"></i>
-          <span>Abre Waevo y verás una notificación con tu clave. Cópiala y pégala aquí.</span>
+          <span>Abre Waevo → pulsa el botón <b style="color:white">D</b> en la esquina → copia tu clave personal → pégala aquí.</span>
         </div>
-        <label class="label">Clave de acceso</label>
-        <input type="text" class="input" id="code-input" placeholder="Pega aquí tu clave..." autocomplete="off" spellcheck="false">
+        <label class="label">Tu clave personal</label>
+        <textarea class="textarea" id="code-ta" placeholder="Pega aquí tu clave de 52 caracteres..." oninput="onInput(this)"></textarea>
+        <div class="counter">
+          <span>Caracteres: <span id="cnt" style="font-family:monospace;font-weight:700;color:var(--muted)">0</span> / 52</span>
+          <span id="cnt-msg"></span>
+        </div>
         <div class="error" id="err"></div>
-        <button class="btn" id="go-btn" onclick="doLogin()">
-          <i class="fas fa-arrow-right"></i> Acceder al Dashboard
-        </button>
+        <button class="btn" id="go-btn" onclick="doLogin()"><i class="fas fa-arrow-right"></i> Acceder al Dashboard</button>
       </div>
 
       <div id="s-wait" class="state">
         <div class="wait-center">
           <div class="wait-ring"></div>
-          <div style="font-size:18px;font-weight:800;margin-bottom:8px">Verificando</div>
-          <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Por favor espera...</div>
+          <div style="font-size:18px;font-weight:800;margin-bottom:8px">Verificando identidad</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Comprobando tu clave personal...</div>
           <div class="wait-num" id="wait-num">5</div>
           <div style="font-size:11px;color:var(--muted);margin-top:4px">segundos</div>
         </div>
@@ -98,61 +98,133 @@
     </div>
   </div>
 
-  <script>
-    const MASTER_CODE = 'jnjdnjj\u20AC)didm\u20ACnekjkjckjdkmkzmckldleo';
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const db = getDatabase(initializeApp({
+      apiKey:"AIzaSyD13N4-9MjTrmlPwGP7mves0Exje4v2ACw",
+      authDomain:"kahoot-8529e.firebaseapp.com",
+      databaseURL:"https://kahoot-8529e-default-rtdb.firebaseio.com",
+      projectId:"kahoot-8529e",
+      storageBucket:"kahoot-8529e.firebasestorage.app",
+      messagingSenderId:"313414356056",
+      appId:"1:313414356056:web:4aab4587f7df9393008e2d"
+    }));
+
+    // Misma función — DEBE ser idéntica a la del navegador
+    function generateCode(seed) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+      let hash = 0;
+      for (let i = 0; i < seed.length; i++) {
+        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+        hash = hash & hash;
+      }
+      let result = '';
+      let current = Math.abs(hash);
+      for (let i = 0; i < 52; i++) {
+        current = (current * 1664525 + 1013904223) & 0xffffffff;
+        result += chars[Math.abs(current) % chars.length];
+      }
+      return result;
+    }
+
+    window.onInput = function(el) {
+      const len = el.value.trim().length;
+      const cntEl = document.getElementById('cnt');
+      const msgEl = document.getElementById('cnt-msg');
+      cntEl.textContent = len;
+      el.classList.remove('ok','bad');
+      if      (len === 0)  { cntEl.style.color='var(--muted)';   msgEl.innerHTML=''; }
+      else if (len < 52)   { cntEl.style.color='var(--warning)'; msgEl.innerHTML='<span style="color:var(--warning)">⚠ Faltan '+(52-len)+'</span>'; }
+      else if (len === 52) { cntEl.style.color='var(--success)'; msgEl.innerHTML='<span style="color:var(--success)">✓ Listo</span>'; el.classList.add('ok'); }
+      else                 { cntEl.style.color='var(--danger)';  msgEl.innerHTML='<span style="color:var(--danger)">✗ '+(len-52)+' de más</span>'; el.classList.add('bad'); }
+    };
 
     function show(id) {
-      ['s-input','s-wait','s-ok'].forEach(function(s) {
-        document.getElementById(s).classList.remove('show');
-      });
+      ['s-input','s-wait','s-ok'].forEach(s => document.getElementById(s).classList.remove('show'));
       document.getElementById(id).classList.add('show');
     }
 
-    function doLogin() {
-      const input = document.getElementById('code-input').value.trim();
-      const err   = document.getElementById('err');
-      const btn   = document.getElementById('go-btn');
+    window.doLogin = async function() {
+      const inputCode = document.getElementById('code-ta').value.trim();
+      const err = document.getElementById('err');
+      const btn = document.getElementById('go-btn');
       err.textContent = '';
 
-      if (!input) { err.textContent = '❌ Introduce la clave.'; return; }
+      if (!inputCode)          { err.textContent='❌ Pega tu clave primero.'; return; }
+      if (inputCode.length !== 52) { err.textContent='❌ La clave tiene que tener exactamente 52 caracteres. Tienes '+inputCode.length+'.'; return; }
 
-      if (input !== MASTER_CODE) {
-        err.textContent = '❌ Clave incorrecta.';
-        document.getElementById('code-input').classList.add('bad');
-        document.getElementById('code-input').classList.remove('ok');
-        return;
-      }
-
-      document.getElementById('code-input').classList.add('ok');
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch" style="animation:spinBtn 1s linear infinite;display:inline-block"></i> Verificando...';
+      btn.innerHTML = '<i class="fas fa-circle-notch" style="animation:spinBtn 1s linear infinite;display:inline-block"></i> Buscando...';
 
-      show('s-wait');
-      document.getElementById('d1').classList.remove('on');
-      document.getElementById('d1').classList.add('done');
-      document.getElementById('d2').classList.add('on');
+      try {
+        const snap = await get(ref(db,'waevo_dash_codes'));
 
-      let secs = 5;
-      const numEl = document.getElementById('wait-num');
-      const interval = setInterval(function() {
-        secs--;
-        numEl.textContent = secs;
-        if (secs <= 0) {
-          clearInterval(interval);
-          sessionStorage.setItem('waevo_session', 'sess_' + Date.now());
-          sessionStorage.setItem('waevo_user_id', 'master');
-          show('s-ok');
-          document.getElementById('d2').classList.remove('on');
-          document.getElementById('d2').classList.add('done');
-          document.getElementById('d3').classList.add('on');
-          setTimeout(function() { window.location.href = 'dashboard.html'; }, 1500);
+        if (!snap.exists()) {
+          err.textContent = '❌ No hay usuarios registrados. Instala la actualización en Waevo primero.';
+          btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
+          return;
         }
-      }, 1000);
-    }
 
-    document.getElementById('code-input').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') doLogin();
-    });
+        const all = snap.val();
+        let foundUserId = null;
+
+        // Buscar qué usuario tiene exactamente esta clave
+        for (const [uid, data] of Object.entries(all)) {
+          if (data.code && data.code === inputCode) {
+            // Verificación doble: regenerar desde el ID
+            const regen = generateCode(uid);
+            if (regen === inputCode) {
+              foundUserId = uid;
+              break;
+            }
+          }
+        }
+
+        if (!foundUserId) {
+          err.textContent = '❌ Clave incorrecta. Cópiala exactamente desde el botón D de Waevo.';
+          document.getElementById('code-ta').classList.add('bad');
+          document.getElementById('code-ta').classList.remove('ok');
+          btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
+          return;
+        }
+
+        // ✅ Clave correcta
+        const token = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2).toUpperCase();
+        sessionStorage.setItem('waevo_user_id', foundUserId);
+        sessionStorage.setItem('waevo_session', token);
+
+        show('s-wait');
+        document.getElementById('d1').classList.remove('on');
+        document.getElementById('d1').classList.add('done');
+        document.getElementById('d2').classList.add('on');
+
+        let secs = 5;
+        const numEl = document.getElementById('wait-num');
+        const interval = setInterval(async () => {
+          secs--;
+          numEl.textContent = secs;
+          if (secs <= 0) {
+            clearInterval(interval);
+            await set(ref(db,'waevo_sessions/'+foundUserId), {
+              token, userId: foundUserId,
+              createdAt: Date.now(),
+              expires: Date.now() + 7*24*60*60*1000
+            });
+            show('s-ok');
+            document.getElementById('d2').classList.remove('on');
+            document.getElementById('d2').classList.add('done');
+            document.getElementById('d3').classList.add('on');
+            setTimeout(() => window.location.href='dashboard.html', 1500);
+          }
+        }, 1000);
+
+      } catch(e) {
+        err.textContent = '❌ Error de conexión. Inténtalo de nuevo.';
+        btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
+      }
+    };
   </script>
 </body>
 </html>
