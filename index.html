@@ -11,6 +11,9 @@
     body { background:linear-gradient(-45deg,#050505,#0a0a14,#0d0520,#050a14); background-size:400% 400%; animation:gradBG 12s ease infinite; color:#f8fafc; font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
     @keyframes gradBG { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
     .bg-grid { position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none; }
+    .bg-glow { position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(189,0,255,0.07) 0%,transparent 70%);top:-150px;right:-150px;z-index:0;pointer-events:none;animation:floatG 9s ease-in-out infinite; }
+    .bg-glow2 { position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.05) 0%,transparent 70%);bottom:-100px;left:-100px;z-index:0;pointer-events:none;animation:floatG 11s ease-in-out infinite reverse; }
+    @keyframes floatG { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,20px)} }
     .wrap { position:relative;z-index:1;width:460px;max-width:94vw;animation:slideUp 0.5s cubic-bezier(0.2,0.8,0.2,1); }
     @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
     .logo { text-align:center;margin-bottom:10px;font-size:3.2rem;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,#00e5ff,#bd00ff,#ff0055);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(189,0,255,0.5)); }
@@ -20,7 +23,7 @@
     .card-desc { font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6; }
     .info-box { background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--muted);display:flex;gap:10px;margin-bottom:24px;line-height:1.6; }
     .info-box i { color:var(--accent);flex-shrink:0;margin-top:2px; }
-    .label { font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:8px;display:block; }
+    .lbl { font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:8px;display:block; }
     .textarea { width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 18px;color:#f8fafc;font-size:12.5px;font-family:monospace;letter-spacing:0.5px;line-height:1.7;transition:0.3s;user-select:text;-webkit-user-select:text;resize:none;height:90px; }
     .textarea::placeholder { color:rgba(255,255,255,0.2);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;letter-spacing:normal; }
     .textarea:focus { border-color:var(--accent);background:rgba(0,229,255,0.04);box-shadow:0 0 0 3px rgba(0,229,255,0.1);outline:none; }
@@ -28,7 +31,7 @@
     .textarea.bad { border-color:var(--danger);background:rgba(255,0,85,0.03); }
     .counter { font-size:11px;color:var(--muted);margin-top:6px;display:flex;justify-content:space-between; }
     .error { font-size:12px;color:var(--danger);min-height:20px;margin:8px 0;font-weight:600; }
-    .btn { width:100%;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;color:white;font-weight:700;font-size:15px;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px; }
+    .btn { width:100%;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--secondary),var(--accent));border:none;color:white;font-weight:700;font-size:15px;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;font-family:inherit; }
     .btn:hover { opacity:0.88;transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,229,255,0.3); }
     .btn:disabled { opacity:0.4;cursor:not-allowed;transform:none; }
     .state { display:none; }
@@ -43,45 +46,56 @@
     @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
     .dots { display:flex;justify-content:center;gap:8px;margin-top:28px; }
     .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);transition:0.3s; }
-    .dot.on   { background:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.4); }
+    .dot.on { background:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.4); }
     .dot.done { background:var(--success); }
-    @keyframes spinBtn { to{transform:rotate(360deg)} }
+    .spinner-inline { animation:spin 1s linear infinite;display:inline-block; }
   </style>
 </head>
 <body>
   <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div class="bg-glow2"></div>
+
   <div class="wrap">
     <div class="logo">Waevo</div>
     <div class="subtitle">Dashboard & Ajustes</div>
     <div class="card">
 
+      <!-- PASO 1: introducir clave -->
       <div id="s-input" class="state show">
-        <div class="card-title"><i class="fas fa-key" style="color:var(--accent)"></i> Código de acceso</div>
+        <div class="card-title">
+          <i class="fas fa-key" style="color:var(--accent)"></i>
+          Clave de acceso
+        </div>
         <div class="card-desc">Introduce tu clave personal de 52 caracteres para acceder al Dashboard.</div>
         <div class="info-box">
           <i class="fas fa-circle-info"></i>
-          <span>Abre Waevo → pulsa el botón <b style="color:white">D</b> en la esquina → copia tu clave personal → pégala aquí.</span>
+          <span>Obtén tu clave en <b style="color:white">waevo-clave.vercel.app</b> introduciendo los primeros 6 caracteres de tu ID de Waevo.</span>
         </div>
-        <label class="label">Tu clave personal</label>
+        <label class="lbl">Tu clave personal</label>
         <textarea class="textarea" id="code-ta" placeholder="Pega aquí tu clave de 52 caracteres..." oninput="onInput(this)"></textarea>
         <div class="counter">
           <span>Caracteres: <span id="cnt" style="font-family:monospace;font-weight:700;color:var(--muted)">0</span> / 52</span>
           <span id="cnt-msg"></span>
         </div>
         <div class="error" id="err"></div>
-        <button class="btn" id="go-btn" onclick="doLogin()"><i class="fas fa-arrow-right"></i> Acceder al Dashboard</button>
+        <button class="btn" id="go-btn" onclick="doLogin()">
+          <i class="fas fa-arrow-right"></i> Acceder al Dashboard
+        </button>
       </div>
 
+      <!-- PASO 2: verificando -->
       <div id="s-wait" class="state">
         <div class="wait-center">
           <div class="wait-ring"></div>
           <div style="font-size:18px;font-weight:800;margin-bottom:8px">Verificando identidad</div>
-          <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Comprobando tu clave personal...</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Comprobando tu clave...</div>
           <div class="wait-num" id="wait-num">5</div>
           <div style="font-size:11px;color:var(--muted);margin-top:4px">segundos</div>
         </div>
       </div>
 
+      <!-- PASO 3: éxito -->
       <div id="s-ok" class="state">
         <div class="success-center">
           <div class="success-icon">✅</div>
@@ -112,33 +126,16 @@
       appId:"1:313414356056:web:4aab4587f7df9393008e2d"
     }));
 
-    // Misma función — DEBE ser idéntica a la del navegador
-    function generateCode(seed) {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
-      let hash = 0;
-      for (let i = 0; i < seed.length; i++) {
-        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
-        hash = hash & hash;
-      }
-      let result = '';
-      let current = Math.abs(hash);
-      for (let i = 0; i < 52; i++) {
-        current = (current * 1664525 + 1013904223) & 0xffffffff;
-        result += chars[Math.abs(current) % chars.length];
-      }
-      return result;
-    }
-
     window.onInput = function(el) {
       const len = el.value.trim().length;
       const cntEl = document.getElementById('cnt');
       const msgEl = document.getElementById('cnt-msg');
       cntEl.textContent = len;
       el.classList.remove('ok','bad');
-      if      (len === 0)  { cntEl.style.color='var(--muted)';   msgEl.innerHTML=''; }
-      else if (len < 52)   { cntEl.style.color='var(--warning)'; msgEl.innerHTML='<span style="color:var(--warning)">⚠ Faltan '+(52-len)+'</span>'; }
-      else if (len === 52) { cntEl.style.color='var(--success)'; msgEl.innerHTML='<span style="color:var(--success)">✓ Listo</span>'; el.classList.add('ok'); }
-      else                 { cntEl.style.color='var(--danger)';  msgEl.innerHTML='<span style="color:var(--danger)">✗ '+(len-52)+' de más</span>'; el.classList.add('bad'); }
+      if      (len === 0)  { cntEl.style.color='var(--muted)';    msgEl.innerHTML=''; }
+      else if (len < 52)   { cntEl.style.color='var(--warning)';  msgEl.innerHTML='<span style="color:var(--warning)">⚠ Faltan '+(52-len)+'</span>'; }
+      else if (len === 52) { cntEl.style.color='var(--success)';  msgEl.innerHTML='<span style="color:var(--success)">✓ Listo</span>'; el.classList.add('ok'); }
+      else                 { cntEl.style.color='var(--danger)';   msgEl.innerHTML='<span style="color:var(--danger)">✗ '+(len-52)+' de más</span>'; el.classList.add('bad'); }
     };
 
     function show(id) {
@@ -152,17 +149,17 @@
       const btn = document.getElementById('go-btn');
       err.textContent = '';
 
-      if (!inputCode)          { err.textContent='❌ Pega tu clave primero.'; return; }
+      if (!inputCode)              { err.textContent='❌ Pega tu clave primero.'; return; }
       if (inputCode.length !== 52) { err.textContent='❌ La clave tiene que tener exactamente 52 caracteres. Tienes '+inputCode.length+'.'; return; }
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-circle-notch" style="animation:spinBtn 1s linear infinite;display:inline-block"></i> Buscando...';
+      btn.innerHTML = '<i class="fas fa-circle-notch spinner-inline"></i> Buscando...';
 
       try {
-        const snap = await get(ref(db,'waevo_dash_codes'));
+        const snap = await get(ref(db, 'waevo_dash_codes'));
 
         if (!snap.exists()) {
-          err.textContent = '❌ No hay usuarios registrados. Instala la actualización en Waevo primero.';
+          err.textContent = '❌ No hay usuarios registrados. Entra en waevo-clave.vercel.app primero.';
           btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
           return;
         }
@@ -170,20 +167,32 @@
         const all = snap.val();
         let foundUserId = null;
 
-        // Buscar qué usuario tiene exactamente esta clave
+        // Comparación directa — sin regenerar matemáticamente
+        // Solo compara el código guardado en Firebase con el introducido
         for (const [uid, data] of Object.entries(all)) {
           if (data.code && data.code === inputCode) {
-            // Verificación doble: regenerar desde el ID
-            const regen = generateCode(uid);
-            if (regen === inputCode) {
-              foundUserId = uid;
-              break;
+            foundUserId = uid;
+            break;
+          }
+        }
+
+        if (!foundUserId) {
+          // Buscar también en alexbrowser_users por si acaso
+          const usersSnap = await get(ref(db, 'alexbrowser_users'));
+          if (usersSnap.exists()) {
+            // Regenerar para cada usuario y comparar
+            for (const [uid] of Object.entries(usersSnap.val())) {
+              const regen = generateCode(uid);
+              if (regen === inputCode) {
+                foundUserId = uid;
+                break;
+              }
             }
           }
         }
 
         if (!foundUserId) {
-          err.textContent = '❌ Clave incorrecta. Cópiala exactamente desde el botón D de Waevo.';
+          err.textContent = '❌ Clave incorrecta. Obtén tu clave en waevo-clave.vercel.app';
           document.getElementById('code-ta').classList.add('bad');
           document.getElementById('code-ta').classList.remove('ok');
           btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
@@ -207,8 +216,9 @@
           numEl.textContent = secs;
           if (secs <= 0) {
             clearInterval(interval);
-            await set(ref(db,'waevo_sessions/'+foundUserId), {
-              token, userId: foundUserId,
+            await set(ref(db, 'waevo_sessions/' + foundUserId), {
+              token,
+              userId: foundUserId,
               createdAt: Date.now(),
               expires: Date.now() + 7*24*60*60*1000
             });
@@ -216,7 +226,7 @@
             document.getElementById('d2').classList.remove('on');
             document.getElementById('d2').classList.add('done');
             document.getElementById('d3').classList.add('on');
-            setTimeout(() => window.location.href='dashboard.html', 1500);
+            setTimeout(() => window.location.href = 'dashboard.html', 1500);
           }
         }, 1000);
 
@@ -225,6 +235,23 @@
         btn.disabled=false; btn.innerHTML='<i class="fas fa-arrow-right"></i> Acceder al Dashboard';
       }
     };
+
+    // Función generateCode también en el login como fallback
+    function generateCode(seed) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+      let hash = 0;
+      for (let i = 0; i < seed.length; i++) {
+        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+        hash = hash & hash;
+      }
+      let result = '';
+      let current = Math.abs(hash);
+      for (let i = 0; i < 52; i++) {
+        current = (current * 1664525 + 1013904223) & 0xffffffff;
+        result += chars[Math.abs(current) % chars.length];
+      }
+      return result;
+    }
   </script>
 </body>
 </html>
